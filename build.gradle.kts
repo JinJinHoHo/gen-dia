@@ -11,6 +11,10 @@ repositories {
     mavenCentral()
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+}
+
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
@@ -20,19 +24,24 @@ intellij {
 
     plugins.set(listOf(
         "org.intellij.plugins.markdown",
-        "com.intellij.java"
+        "com.intellij.java",
+        "com.intellij.platform.images"
     ))
 }
 
 dependencies{
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+//    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.vintage:junit-vintage-engine")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks {
+
+    buildSearchableOptions {
+        enabled = false
+    }
+
     // Set the JVM compatibility versions
     withType<JavaCompile> {
         sourceCompatibility = "17"
@@ -46,6 +55,14 @@ tasks {
         version.set("${project.version}")
         sinceBuild.set("231")
         untilBuild.set("233.*")
+    }
+
+    compileKotlin {
+        kotlinOptions.jvmTarget = "17"
+    }
+
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "17"
     }
 
     signPlugin {

@@ -3,20 +3,30 @@
     <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
     <id>pe.pjh.gen-dia</id>
 
-    <!-- Public plugin name should be written in Title Case.
-         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
     <name>Gen-Dia</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="pjhplayer@gmail.com" url="https://github.com/JinJinHoHo">Jinho</vendor>
 
-    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
-         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
-         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-
     <!-- 플러그인 디펜턴시 설정(미설정시 테스트IDE에서 관련 클래스 못찾음. -->
     <depends>com.intellij.java</depends>
     <depends>org.intellij.plugins.markdown</depends>
+    <depends>com.intellij.platform.images</depends>
+
+    <!-- Text to display as description on Settings | Plugin page -->
+    <description>
+        <![CDATA[
+      Intention action that suggests converting a ternary operator into an 'if' block.<br>
+      Adds entry to <b>Settings | Editor | Intentions | SDK Intentions<b>.
+    ]]>
+    </description>
+    <change-notes>
+        <![CDATA[
+      <ul>
+        <li><b>0.1</b> Release 2018.3 and earlier.</li>
+      </ul>
+    ]]>
+    </change-notes>
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->

@@ -41,7 +41,9 @@ class DiagramGenAction : IntentionAction {
         val psiElement = PsiUtilBase.getElementAtCaret(editor)
         if (psiElement == null) return
 
-        val (uMLType: pe.pjh.gendia.diagram.UMLType, diagramType: pe.pjh.gendia.diagram.DiagramType) = getType(psiElement)
+        val (uMLType: pe.pjh.gendia.diagram.UMLType, diagramType: pe.pjh.gendia.diagram.DiagramType) = getType(
+            psiElement
+        )
 
         val commentList = arrayListOf<String>()
         psiElement.parent.children
@@ -50,10 +52,18 @@ class DiagramGenAction : IntentionAction {
             .filter { it.indexOf("##") != -1 }
             .mapTo(commentList) { it.removePrefix("##").trim() }
 
+        var sp: String = ""
+        commentList.forEach {
+            val keyValue = it.split(":");
+            if ("startpoint".equals(keyValue[0].toLowerCase())) {
+                sp = keyValue[1].trim()
+            }
+        }
+
         DiagramGenInfo(
             uMLType,
             diagramType,
-            SequenceDiagramParam(commentList)
+            SequenceDiagramParam(sp)
         )
 
 
