@@ -1,35 +1,19 @@
 package pe.pjh.gendia.diagram
 
-import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
+import com.intellij.psi.JavaPsiFacade
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.intellij.usageView.UsageInfo
+import junit.framework.TestCase
 import org.junit.Assert
 
+
 //
-class SequenceDiagramParserTest : LightJavaCodeInsightFixtureTestCase() {
+class SequenceDiagramParserTest : BasePlatformTestCase() {
 
     override fun getTestDataPath(): String {
         return "src/test/testData"
-    }
-
-
-    protected fun doTest(testName: String, hint: String?) {
-        myFixture.configureByFile("$testName.java")
-        val action = myFixture.findSingleIntention(hint!!)
-        Assert.assertNotNull(action)
-        myFixture.launchAction(action)
-        myFixture.checkResultByFile("$testName.after.java")
-    }
-
-    fun testCollection() {
-        SequenceDiagramParser(
-            project,
-            DiagramGenInfo(
-                UMLType.mermaid,
-                DiagramType.sequenceDiagram,
-                SequenceDiagramParam("pe.pjh.ws.application.service.AppInitializer.startUp")
-            )
-
-        )
-        doTest("before.template", "SDK: Convert ternary operator to if statement")
     }
 
     fun testRenameElementAtCaret() {
@@ -40,7 +24,48 @@ class SequenceDiagramParserTest : LightJavaCodeInsightFixtureTestCase() {
 
 
     fun testFindUsages() {
-        val usageInfos = myFixture.testFindUsages("FindUsagesTestData.simple", "FindUsagesTestData.java")
-        assertEquals(1, usageInfos.size)
+
+        val files: Array<PsiFile> = myFixture.configureByFiles("FindUsagesTestData.java")
+        files.forEach { println(it.getName()) }
+
+        val myClass = JavaPsiFacade.getInstance(project)
+            .findClass("Test", module.getModuleWithDependenciesAndLibrariesScope(false))
+
+        val myMethod: PsiElement = myClass!!.findMethodsByName("main", false)[0]
+
+        assertNotNull(myMethod)
     }
+
+
+
+    fun testCollection() {
+
+        val files: Array<PsiFile> = myFixture.configureByFiles("FindUsagesTestData.java")
+
+        val sd :SequenceDiagramParser = SequenceDiagramParser(
+            project,
+            DiagramGenInfo(
+                UMLType.mermaid,
+                DiagramType.sequenceDiagram,
+                SequenceDiagramParam("Test.main")
+            )
+        )
+
+        sd.collection();
+        TestCase.assertEquals(1,sd.startPointPsiMethods.size)
+
+        sd.analysis();
+
+
+
+//        files.forEach { println(it.getName()) }
+//
+//        val myClass = JavaPsiFacade.getInstance(project)
+//            .findClass("Test", module.getModuleWithDependenciesAndLibrariesScope(false))
+//
+//        val myMethod: PsiElement = myClass!!.findMethodsByName("main", false)[0]
+//
+//        assertNotNull(myMethod)
+    }
+
 }

@@ -24,8 +24,7 @@ intellij {
 
     plugins.set(listOf(
         "org.intellij.plugins.markdown",
-        "com.intellij.java",
-        "com.intellij.platform.images"
+        "com.intellij.java"
     ))
 }
 

@@ -8,10 +8,9 @@
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="pjhplayer@gmail.com" url="https://github.com/JinJinHoHo">Jinho</vendor>
 
-    <!-- 플러그인 디펜턴시 설정(미설정시 테스트IDE에서 관련 클래스 못찾음. -->
+    <!-- 플러그인 디펜턴시 설정(미설정시 테스트IDE에서 관련 클래스 못찾음.) -->
     <depends>com.intellij.java</depends>
     <depends>org.intellij.plugins.markdown</depends>
-    <depends>com.intellij.platform.images</depends>
 
     <!-- Text to display as description on Settings | Plugin page -->
     <description>
