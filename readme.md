@@ -20,3 +20,58 @@ CodeDoc
     params
         param1
 
+
+```mermaid
+sequenceDiagram
+
+    autonumber
+    actor User
+    participant Alice
+
+
+    activate Alice
+    User->>+Alice:request
+    
+        
+        Alice->>+John: Hello John, how are you?
+        
+            activate John
+                loop 무한루프
+                    John-->John: Great!
+                end
+                John-->>+Alice:return
+            deactivate John
+            
+        Alice->>D: Hi!
+    deactivate Alice
+        activate D
+            D->>E: Hi!
+        deactivate D
+
+        activate John
+        John->>E: Hi!
+        deactivate John
+    
+        Alice-->>+User:response
+    deactivate Alice
+```
+
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+
+    participant User
+    participant sequence.SimpleLoop
+
+    User->>sequence.SimpleLoop:testRun1
+    sequence.SimpleLoop-->>User:String
+    User->>sequence.SimpleLoop:testRun2
+    loop 루프 테스트
+        sequence.SimpleLoop->>sequence.SimpleLoop:검수
+    end
+
+    sequence.SimpleLoop-->>User:String
+
+```

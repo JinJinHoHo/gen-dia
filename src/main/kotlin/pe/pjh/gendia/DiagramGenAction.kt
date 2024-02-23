@@ -12,6 +12,7 @@ import com.intellij.psi.util.PsiUtilBase
 import com.intellij.util.IncorrectOperationException
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
 import pe.pjh.gendia.diagram.*
+import pe.pjh.gendia.diagram.sequence.SequenceDiagramParam
 
 class DiagramGenAction : IntentionAction {
 
@@ -29,9 +30,9 @@ class DiagramGenAction : IntentionAction {
 
         try {
             getType(psiElement)
-            return true;
+            return true
         } catch (e: IllegalStateException) {
-            return false;
+            return false
         }
     }
 
@@ -52,9 +53,9 @@ class DiagramGenAction : IntentionAction {
             .filter { it.indexOf("##") != -1 }
             .mapTo(commentList) { it.removePrefix("##").trim() }
 
-        var sp: String = ""
+        var sp = ""
         commentList.forEach {
-            val keyValue = it.split(":");
+            val keyValue = it.split(":")
             if ("startpoint".equals(keyValue[0].toLowerCase())) {
                 sp = keyValue[1].trim()
             }
@@ -94,12 +95,12 @@ class DiagramGenAction : IntentionAction {
         if (psiElementLang.toString() == "PsiElement(Markdown:Markdown:FENCE_LANG)")
             codeLang = psiElementLang.text
 
-        if (codeLang == null) throw IllegalStateException();
+        if (codeLang == null) throw IllegalStateException()
 
         val umlType = pe.pjh.gendia.diagram.UMLType.valueOf(codeLang)
 
         val diagramType = pe.pjh.gendia.diagram.DiagramType.valueOf(psiElementParent.children[3].text)
 
-        return Pair(umlType, diagramType);
+        return Pair(umlType, diagramType)
     }
 }

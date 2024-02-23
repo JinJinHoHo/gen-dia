@@ -13,6 +13,7 @@ repositories {
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
+
 }
 
 // Configure Gradle IntelliJ Plugin
@@ -22,13 +23,15 @@ intellij {
     version.set("2023.1.5")
 //    type.set("IC") // Target IDE Platform
 
-    plugins.set(listOf(
-        "org.intellij.plugins.markdown",
-        "com.intellij.java"
-    ))
+    plugins.set(
+        listOf(
+            "org.intellij.plugins.markdown",
+            "com.intellij.java"
+        )
+    )
 }
 
-dependencies{
+dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
 //    testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.vintage:junit-vintage-engine")

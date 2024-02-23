@@ -6,7 +6,7 @@ interface DiagramParsingProcess {
 
     fun analysis()
 
-    fun generate()
+    fun generate(): String
 
 //    파일 분석
 //    문법 생성

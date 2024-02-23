@@ -11,7 +11,7 @@ class ClassDiagramParser(project: Project,diagramGenInfo: DiagramGenInfo) : Diag
         TODO("Not yet implemented")
     }
 
-    override fun generate() {
+    override fun generate():String {
         TODO("Not yet implemented")
     }
 

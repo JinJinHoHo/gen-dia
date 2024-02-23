@@ -1,6 +1,7 @@
 package pe.pjh.gendia.diagram
 
 import com.intellij.openapi.project.Project
+import pe.pjh.gendia.diagram.sequence.SequenceDiagramParser
 
 object DiagramParamFactory {
     fun dia(project: Project, diagramGenInfo: DiagramGenInfo): DiagramParsingProcess {
@@ -13,6 +14,6 @@ object DiagramParamFactory {
 
         diagramParsingProcess.collection()
 
-        return diagramParsingProcess;
+        return diagramParsingProcess
     }
 }
