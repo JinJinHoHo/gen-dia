@@ -16,6 +16,4 @@ enum class MessageArrowType(expression: String) {
 
     val expression = expression
         get() = field
-
-
 }

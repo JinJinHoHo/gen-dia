@@ -17,9 +17,9 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
 
     fun testCollection() {
 
-        val files: Array<PsiFile> = myFixture.configureByFiles("sequence/SimpleNoReturn.java")
+        myFixture.configureByFiles("sequence/SimpleNoReturn.java")
 
-        val sd: SequenceDiagramParser = SequenceDiagramParser(
+        val sd = SequenceDiagramParser(
             project,
             DiagramGenInfo(
                 UMLType.mermaid,
@@ -43,9 +43,9 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
 
     fun testAnalysis() {
 
-        val files: Array<PsiFile> = myFixture.configureByFiles("sequence/SimpleNoReturn.java")
+        myFixture.configureByFiles("sequence/SimpleNoReturn.java")
 
-        val sd: SequenceDiagramParser = SequenceDiagramParser(
+        val sd = SequenceDiagramParser(
             project,
             DiagramGenInfo(
                 UMLType.mermaid,
@@ -61,9 +61,9 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
 
     fun testGenerate1() {
 
-        val files: Array<PsiFile> = myFixture.configureByFiles("sequence/SimpleNoReturn.java")
+        myFixture.configureByFiles("sequence/SimpleNoReturn.java")
 
-        val sd: SequenceDiagramParser = SequenceDiagramParser(
+        val sd = SequenceDiagramParser(
             project,
             DiagramGenInfo(
                 UMLType.mermaid,
@@ -93,9 +93,9 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
 
     fun testGenerate2() {
 
-        val files: Array<PsiFile> = myFixture.configureByFiles("sequence/SimpleReturn.java")
+        myFixture.configureByFiles("sequence/SimpleReturn.java")
 
-        val sd: SequenceDiagramParser = SequenceDiagramParser(
+        val sd = SequenceDiagramParser(
             project,
             DiagramGenInfo(
                 UMLType.mermaid,
@@ -123,11 +123,14 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
         )
     }
 
-    fun testGenerate3() {
+    /**
+     * 루프 구문 테스트
+     */
+    fun testGenerateByLoop() {
 
-        val files: Array<PsiFile> = myFixture.configureByFiles("sequence/SimpleLoop.java")
+        myFixture.configureByFiles("sequence/SimpleLoop.java")
 
-        val sd: SequenceDiagramParser = SequenceDiagramParser(
+        val sd = SequenceDiagramParser(
             project,
             DiagramGenInfo(
                 UMLType.mermaid,
@@ -142,18 +145,26 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
 
         val code = sd.generate();
         println(code)
-        TestCase.assertEquals(
+
+        val expected ="""
+                autonumber
+                actor User
+                
+                participant User
+                participant sequence.SimpleLoop
+                
+                User->>sequence.SimpleLoop:testRun1
+                sequence.SimpleLoop-->>User:String
+                User->>sequence.SimpleLoop:testRun2
+                loop 루프 테스트
+                    sequence.SimpleLoop->>sequence.SimpleLoop:서브 메소드 콜:newMethod
+                end
+                sequence.SimpleLoop-->>User:String
             """
-            autonumber
-            actor User
-            participant User
-            participant sequence.SimpleLoop
-            User->>sequence.SimpleLoop:testRun1
-            sequence.SimpleLoop-->>User:String
-            User->>sequence.SimpleLoop:testRun2
-            sequence.SimpleLoop-->>User:String
-            """.trimIndent(),
-            code.trimIndent()
+
+        TestCase.assertEquals(
+            expected.replace(Regex("([\\t\\s]+)"),"").trimIndent(),
+            code.replace(Regex("([\\t\\s]+)"),"").trimIndent()
         )
     }
 

@@ -1,5 +1,12 @@
 package pe.pjh.gendia.diagram.sequence
 
+import pe.pjh.gendia.diagram.TabUtil
+
 interface Message {
-    fun getCode(depth:Int):String
+    fun getCode():String
+
+
+    fun getCodeLine(depth: Int): String {
+        return TabUtil.textLine(depth, getCode())
+    }
 }

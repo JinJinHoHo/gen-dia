@@ -59,33 +59,35 @@ class SequenceDiagramParser(
         val actor = Participant(diagramParam.actorName)
         participantMap[actor.name] = actor
 
-
         startPointPsiMethods.forEach {
             val psiClass: PsiClass = it.containingClass ?: return
             val clazz = JavaParticipant(psiClass)
             participantMap[clazz.name] = clazz
 
-            messages.add(
-                MethodGroupMessage(
-                    actor,
-                    clazz,
-                    it
-                )
-            )
+            messages.add(MethodGroupMessage(actor, clazz, it, null))
         }
     }
 
     override fun generate(): String {
         var code = ""
-        code += TabUtil.textLine(1, "autonumber")
+
+        //기본 설정 영역
+        if (diagramParam.autonumber){
+            code += TabUtil.textLine(1, "autonumber")
+            code += "\n"
+        }
+
+        //액터 설정 영역
         code += TabUtil.textLine(1, "actor " + diagramParam.actorName)
         code += "\n"
-        participantMap.forEach { (t, u) ->
-            code += TabUtil.textLine(1, "participant " + u.name)
-        }
+
+        //Participant 영역
+        participantMap.forEach { (t, u) ->code += TabUtil.textLine(1, "participant " + u.name)}
         code += "\n"
+
+        //Messages 영역
         messages.forEach {
-            code += it.getCode(1)
+            code += it.getCodeLine(1)
         }
         return code
     }

@@ -13,6 +13,7 @@ import com.intellij.util.IncorrectOperationException
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
 import pe.pjh.gendia.diagram.*
 import pe.pjh.gendia.diagram.sequence.SequenceDiagramParam
+import java.util.*
 
 class DiagramGenAction : IntentionAction {
 
@@ -56,7 +57,7 @@ class DiagramGenAction : IntentionAction {
         var sp = ""
         commentList.forEach {
             val keyValue = it.split(":")
-            if ("startpoint".equals(keyValue[0].toLowerCase())) {
+            if ("startpoint".equals(keyValue[0].lowercase(Locale.getDefault()))) {
                 sp = keyValue[1].trim()
             }
         }

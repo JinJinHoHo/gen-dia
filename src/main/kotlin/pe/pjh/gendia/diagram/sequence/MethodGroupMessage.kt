@@ -6,36 +6,42 @@ import com.intellij.psi.PsiType
 class MethodGroupMessage(
     caller: Participant,
     override val callee: Participant,
-    psiMethod: PsiMethod
+    psiMethod: PsiMethod,
+    name: String?
 ) : GroupMessage(callee) {
 
-    private val callMessage: LogicMessage =
-        LogicMessage(caller, callee, psiMethod.name, MessageArrowType.SolidLineWithArrowhead)
-    private var backMessage: LogicMessage? = null
+    private val callMessage: CallMessage
+    private var backMessage: CallMessage? = null
 
 
     init {
-        val returnType: PsiType? = psiMethod.returnType
 
-        extracted(psiMethod.body)
+        //노출 명칭 처리.
+        val title: String = if (name.isNullOrBlank()) {
+            psiMethod.name
+        } else {
+            "${name}:${psiMethod.name}"
+        }
+        callMessage = CallMessage(caller, callee, title, MessageArrowType.SolidLineWithArrowhead)
+
+        subMessageParsing(psiMethod.body)
 
         //반환 가능 한 값이 있을 경우
+        val returnType: PsiType? = psiMethod.returnType
         if (returnType != null && "void" != returnType.presentableText) {
-            backMessage = LogicMessage(
+            backMessage = CallMessage(
                 callee, caller,
                 returnType.presentableText, MessageArrowType.DottedLineWithArrowhead
             )
         }
     }
 
-    override fun getCode(depth: Int): String {
-        var code = callMessage.getCode(depth)
-        code += super.getCode(depth)
+    override fun getCodeLine(depth: Int): String {
+        var code = callMessage.getCodeLine(depth)
+        code += super.getCodeLine(depth)
 
-        val subCode: String? = backMessage?.getCode(depth)
+        val subCode: String? = backMessage?.getCodeLine(depth)
         if (!subCode.isNullOrEmpty()) code += subCode
         return code
     }
-
-
 }
