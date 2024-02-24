@@ -1,6 +1,5 @@
 package pe.pjh.gendia.diagram
 
-import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiJavaFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
@@ -147,19 +146,21 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
         println(code)
 
         val expected ="""
-                autonumber
-                actor User
-                
-                participant User
-                participant sequence.SimpleLoop
-                
-                User->>sequence.SimpleLoop:testRun1
-                sequence.SimpleLoop-->>User:String
-                User->>sequence.SimpleLoop:testRun2
-                loop 루프 테스트
-                    sequence.SimpleLoop->>sequence.SimpleLoop:서브 메소드 콜:newMethod
-                end
-                sequence.SimpleLoop-->>User:String
+	autonumber
+
+	actor User
+
+	participant User
+	participant sequence.SimpleLoop
+
+	User->>sequence.SimpleLoop:testRun1
+	sequence.SimpleLoop-->>User:String
+	User->>sequence.SimpleLoop:testRun2
+	loop 루프 테스트
+		sequence.SimpleLoop->>sequence.SimpleLoop:서브 메소드 콜:newMethod
+	end
+	sequence.SimpleLoop->>sequence.SimpleLoop:서브 메소드 콜:newMethod
+	sequence.SimpleLoop-->>User:String
             """
 
         TestCase.assertEquals(
@@ -168,4 +169,47 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
         )
     }
 
+
+    /**
+     * 루프 구문 테스트
+     */
+    fun testGenerateByInBlock() {
+
+        myFixture.configureByFiles("sequence/SimpleInBlock.java")
+
+        val sd = SequenceDiagramParser(
+            project,
+            DiagramGenInfo(
+                UMLType.mermaid,
+                DiagramType.sequenceDiagram,
+                SequenceDiagramParam("sequence.SimpleInBlock.testRun1")
+            )
+        )
+
+        sd.collection();
+
+        sd.analysis();
+
+        val code = sd.generate();
+        println(code)
+
+        val expected ="""
+	autonumber
+
+	actor User
+
+	participant User
+	participant sequence.SimpleInBlock
+
+	User->>sequence.SimpleInBlock:testRun1
+	sequence.SimpleInBlock->>sequence.SimpleInBlock:서브 메소드 콜:newMethod
+	sequence.SimpleInBlock->>sequence.SimpleInBlock:서브 메소드 콜:newMethod
+	sequence.SimpleInBlock-->>User:String
+            """
+
+        TestCase.assertEquals(
+            expected.replace(Regex("([\\t\\s]+)"),"").trimIndent(),
+            code.replace(Regex("([\\t\\s]+)"),"").trimIndent()
+        )
+    }
 }

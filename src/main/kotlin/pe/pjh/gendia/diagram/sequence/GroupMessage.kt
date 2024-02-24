@@ -22,43 +22,59 @@ open class GroupMessage(open val callee: Participant) : Message {
 
         if (psiCodeBlock == null) return
 
-        val psiComment: List<PsiComment> = psiCodeBlock
+        psiCodeBlock
             .children
-            .filterIsInstance<PsiComment>()
-            .filter { it.text.indexOf("//+") != -1 }
+            .filter { it !is PsiWhiteSpace }
+            .forEach {
+                when (it) {
+                    is PsiComment -> {
 
-        psiComment.forEach {
+                        if (it.text.indexOf("//+") == -1) return@forEach
 
-            //코멘트 내용 추출
-            val comment = it.text.substringAfterLast("//+")
+                        //코멘트 내용 추출
+                        val comment = it.text.substringAfterLast("//+")
 
-            //코멘트 다음 라인 psiElement
-            val psiElement: PsiElement = it.nextSibling.nextSibling
+                        //코멘트 다음 라인 psiElement
+                        val psiElement: PsiElement = it.nextSibling.nextSibling
 
-            when (psiElement) {
+                        addMessageByPsiType(psiElement, comment)
+                    }
 
-                is PsiForStatement -> {
-                    subMessages.add(LoopGroupMessage(callee, comment, psiElement))
+                    else -> {
+
+                        if (it.lastChild !is PsiBlockStatement) return@forEach
+
+                        //하위에 코드블록이 있을 경우 재귀호출
+                        subMessageParsing((it.lastChild as PsiBlockStatement).codeBlock)
+                    }
                 }
-
-                is PsiExpressionStatement -> {
-
-                    //psiCall 추출
-                    val psiCall: PsiCall? = psiElement.children
-                        .filterIsInstance<PsiCall>()
-                        .getOrNull(0)
-
-                    val method: PsiMethod? = psiCall?.resolveMethod()
-                    if (method != null) subMessages.add(MethodGroupMessage(callee, callee, method, comment))
-                }
-
-                else -> {
-                    println("+++++++++++=")
-                    println(psiElement)
-                    println("+++++++++++=")
-                }
-
             }
+    }
+
+    private fun addMessageByPsiType(psiElement: PsiElement, comment: String) {
+        when (psiElement) {
+
+            is PsiForStatement -> {
+                subMessages.add(LoopGroupMessage(callee, comment, psiElement))
+            }
+
+            is PsiExpressionStatement -> {
+
+                //psiCall 추출
+                val psiCall: PsiCall? = psiElement.children
+                    .filterIsInstance<PsiCall>()
+                    .getOrNull(0)
+
+                val method: PsiMethod? = psiCall?.resolveMethod()
+                if (method != null) subMessages.add(MethodGroupMessage(callee, callee, method, comment))
+            }
+
+            else -> {
+                println("+++++++++++=")
+                println(psiElement)
+                println("+++++++++++=")
+            }
+
         }
     }
 }
