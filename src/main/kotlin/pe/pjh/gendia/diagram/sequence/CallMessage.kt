@@ -1,5 +1,8 @@
 package pe.pjh.gendia.diagram.sequence
 
+/**
+ * 기본 메시지
+ */
 open class CallMessage(
     open val caller: Participant,
     open val callee: Participant,

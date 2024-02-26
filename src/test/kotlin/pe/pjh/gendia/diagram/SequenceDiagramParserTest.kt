@@ -53,9 +53,9 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
             )
         )
 
-        sd.collection();
+        sd.collection()
 
-        sd.analysis();
+        sd.analysis()
     }
 
     fun testGenerate1() {
@@ -71,11 +71,11 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
             )
         )
 
-        sd.collection();
+        sd.collection()
 
-        sd.analysis();
+        sd.analysis()
 
-        val code = sd.generate();
+        val code = sd.generate()
         println(code)
         TestCase.assertEquals(
             """
@@ -103,11 +103,11 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
             )
         )
 
-        sd.collection();
+        sd.collection()
 
-        sd.analysis();
+        sd.analysis()
 
-        val code = sd.generate();
+        val code = sd.generate()
         println(code)
         TestCase.assertEquals(
             """
@@ -138,14 +138,14 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
             )
         )
 
-        sd.collection();
+        sd.collection()
 
-        sd.analysis();
+        sd.analysis()
 
-        val code = sd.generate();
+        val code = sd.generate()
         println(code)
 
-        val expected ="""
+        val expected = """
 	autonumber
 
 	actor User
@@ -164,8 +164,8 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
             """
 
         TestCase.assertEquals(
-            expected.replace(Regex("([\\t\\s]+)"),"").trimIndent(),
-            code.replace(Regex("([\\t\\s]+)"),"").trimIndent()
+            expected.replace(Regex("([\\t\\s]+)"), "").trimIndent(),
+            code.replace(Regex("([\\t\\s]+)"), "").trimIndent()
         )
     }
 
@@ -186,14 +186,14 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
             )
         )
 
-        sd.collection();
+        sd.collection()
 
-        sd.analysis();
+        sd.analysis()
 
-        val code = sd.generate();
+        val code = sd.generate()
         println(code)
 
-        val expected ="""
+        val expected = """
 	autonumber
 
 	actor User
@@ -208,8 +208,51 @@ class SequenceDiagramParserTest : BasePlatformTestCase() {
             """
 
         TestCase.assertEquals(
-            expected.replace(Regex("([\\t\\s]+)"),"").trimIndent(),
-            code.replace(Regex("([\\t\\s]+)"),"").trimIndent()
+            expected.replace(Regex("([\\t\\s]+)"), "").trimIndent(),
+            code.replace(Regex("([\\t\\s]+)"), "").trimIndent()
+        )
+    }
+
+    /**
+     * IfElse 구문 테스트
+     */
+    fun testGenerateByIfElse() {
+
+        myFixture.configureByFiles("sequence/ConditionalTestSample.java")
+
+        val sd = SequenceDiagramParser(
+            project,
+            DiagramGenInfo(
+                UMLType.mermaid,
+                DiagramType.sequenceDiagram,
+                SequenceDiagramParam("sequence.ConditionalTestSample.testRun1")
+            )
+        )
+
+        sd.collection();
+
+        sd.analysis();
+
+        val code = sd.generate();
+        println(code)
+
+        val expected = """
+	autonumber
+
+	actor User
+
+	participant User
+	participant sequence.SimpleInBlock
+
+	User->>sequence.SimpleInBlock:testRun1
+	sequence.SimpleInBlock->>sequence.SimpleInBlock:서브 메소드 콜:newMethod
+	sequence.SimpleInBlock->>sequence.SimpleInBlock:서브 메소드 콜:newMethod
+	sequence.SimpleInBlock-->>User:String
+            """
+
+        TestCase.assertEquals(
+            expected.replace(Regex("([\\t\\s]+)"), "").trimIndent(),
+            code.replace(Regex("([\\t\\s]+)"), "").trimIndent()
         )
     }
 }

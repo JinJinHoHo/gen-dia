@@ -2,6 +2,9 @@ package pe.pjh.gendia.diagram.sequence
 
 import com.intellij.psi.*
 
+/**
+ * 메시지 그룹(하위로 n개의 메시지를 갖고 있음)
+ */
 open class GroupMessage(open val callee: Participant) : Message {
 
     val subMessages = mutableListOf<Message>()
@@ -18,7 +21,7 @@ open class GroupMessage(open val callee: Participant) : Message {
         return code
     }
 
-    protected fun subMessageParsing(psiCodeBlock: PsiCodeBlock?) {
+    public fun subMessageParsing(psiCodeBlock: PsiCodeBlock?) {
 
         if (psiCodeBlock == null) return
 
@@ -54,8 +57,8 @@ open class GroupMessage(open val callee: Participant) : Message {
     private fun addMessageByPsiType(psiElement: PsiElement, comment: String) {
         when (psiElement) {
 
-            is PsiForStatement -> {
-                subMessages.add(LoopGroupMessage(callee, comment, psiElement))
+            is PsiConditionalLoopStatement -> {
+                subMessages.add(ConditionalLoopGroupMessage(callee, comment, psiElement))
             }
 
             is PsiExpressionStatement -> {
@@ -67,6 +70,10 @@ open class GroupMessage(open val callee: Participant) : Message {
 
                 val method: PsiMethod? = psiCall?.resolveMethod()
                 if (method != null) subMessages.add(MethodGroupMessage(callee, callee, method, comment))
+            }
+
+            is PsiIfStatement -> {
+                subMessages.add(IfConditionalGroupMessage(callee, comment, psiElement))
             }
 
             else -> {
