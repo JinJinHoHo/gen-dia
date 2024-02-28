@@ -9,4 +9,5 @@ interface Message {
     fun getCodeLine(depth: Int): String {
         return TabUtil.textLine(depth, getCode())
     }
+
 }

@@ -12,6 +12,13 @@ public class ConditionalTestSample {
             //+서브 메소드 콜
             newMethod();
         }
+    }
+
+
+    public void testRun2() {
+        System.out.println("simple:key with spaces");
+
+        int i = 10;
 
         //+분기 처리 타입2
         if (i == 5) {
@@ -21,6 +28,15 @@ public class ConditionalTestSample {
             //+프린트
             System.out.println("ELSE");
         }
+
+    }
+
+
+    public void testRun3() {
+        System.out.println("simple:key with spaces");
+
+        int i = 10;
+
 
         //+분기 처리 타입2
         if (i == 5) {
@@ -40,7 +56,7 @@ public class ConditionalTestSample {
     }
 
 
-    public void testRun2() {
+    public void testRun4() {
         System.out.println("simple:key with spaces");
 
         int i = 10;

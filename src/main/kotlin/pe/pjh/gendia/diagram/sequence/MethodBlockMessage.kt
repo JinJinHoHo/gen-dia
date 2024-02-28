@@ -3,12 +3,12 @@ package pe.pjh.gendia.diagram.sequence
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiType
 
-class MethodGroupMessage(
+class MethodBlockMessage(
     caller: Participant,
     override val callee: Participant,
     psiMethod: PsiMethod,
     name: String?
-) : GroupMessage(callee) {
+) : BlockMessage(callee) {
 
     private val callMessage: CallMessage
     private var backMessage: CallMessage? = null

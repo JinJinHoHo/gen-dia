@@ -1,10 +1,9 @@
 package pe.pjh.gendia.diagram.sequence
 
-class TryCatchGroupMessage(
+class TryCatchMultipleMessage(
     override val callee: Participant,
     val tryMessage: CallMessage,
-    val catchMessages: List<IfConditionalGroupMessage>,
-    ) : GroupMessage(callee) {
+    ) : MultipleBlockMessage(callee) {
     override fun getCode(): String {
         TODO("Not yet implemented")
     }

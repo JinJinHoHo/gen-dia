@@ -1,4 +1,5 @@
-#
+# GenDia
+
 
 
 작동 방식 :
@@ -60,18 +61,13 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     autonumber
+
     actor User
 
     participant User
-    participant sequence.SimpleLoop
+    participant sequence.ConditionalTestSample
 
-    User->>sequence.SimpleLoop:testRun1
-    sequence.SimpleLoop-->>User:String
-    User->>sequence.SimpleLoop:testRun2
-    loop 루프 테스트
-        sequence.SimpleLoop->>sequence.SimpleLoop:검수
-    end
-
-    sequence.SimpleLoop-->>User:String
+    User->>sequence.ConditionalTestSample:testRun1
+    sequence.ConditionalTestSample->>sequence.ConditionalTestSample:서브 메소드 콜:newMethod
 
 ```

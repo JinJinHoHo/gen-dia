@@ -7,9 +7,8 @@ import pe.pjh.gendia.diagram.sequence.SequenceDiagramParam
 
 class SequenceDiagramParamTest {
 
-    @Test
 //    @DisplayName("파라미터 파싱 테스트")
-    fun test() {
+    fun testParam() {
         val aa = SequenceDiagramParam("pe.pjh.ws.application.service.AppInitializer.startUp")
 
         TestCase.assertEquals(

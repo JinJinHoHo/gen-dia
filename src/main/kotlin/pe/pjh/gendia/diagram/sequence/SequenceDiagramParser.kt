@@ -64,7 +64,7 @@ class SequenceDiagramParser(
             val clazz = JavaParticipant(psiClass)
             participantMap[clazz.name] = clazz
 
-            messages.add(MethodGroupMessage(actor, clazz, it, null))
+            messages.add(MethodBlockMessage(actor, clazz, it, null))
         }
     }
 

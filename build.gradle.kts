@@ -34,8 +34,8 @@ intellij {
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
 //    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.junit.vintage:junit-vintage-engine")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.junit.vintage:junit-vintage-engine")
 }
 
 tasks {
@@ -80,4 +80,12 @@ tasks {
     withType<Test>().configureEach {
         useJUnitPlatform()
     }
+
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
+    }
+
 }
