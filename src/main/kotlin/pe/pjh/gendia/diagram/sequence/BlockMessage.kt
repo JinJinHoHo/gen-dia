@@ -1,6 +1,7 @@
 package pe.pjh.gendia.diagram.sequence
 
 import com.intellij.psi.*
+import com.intellij.psi.impl.source.tree.java.PsiMethodCallExpressionImpl
 import pe.pjh.gendia.diagram.UndefindOperationException
 
 /**
@@ -46,9 +47,8 @@ open class BlockMessage(open val callee: Participant) : Message {
                         addMessageByPsiType(psiElement, comment)
                         index = psiElementList.indexOf(psiElement)
                     }
-
-
                 }
+
                 else -> {
                     if (it.lastChild is PsiBlockStatement) {
                         //하위에 코드블록이 있을 경우 재귀호출
@@ -76,8 +76,15 @@ open class BlockMessage(open val callee: Participant) : Message {
 
                 val method: PsiMethod? = psiCall?.resolveMethod()
                 if (method != null) subMessages.add(MethodBlockMessage(callee, callee, method, comment))
-                else{
-                    throw UndefindOperationException("ExpressionStatement Code - ${psiCall}")
+                else {
+                    subMessages.add(
+                        CallMessage(
+                            callee,
+                            callee,
+                            (psiCall as PsiMethodCallExpression).methodExpression.text,
+                            MessageArrowType.SolidLineWithArrowhead
+                        )
+                    )
                 }
 
             }

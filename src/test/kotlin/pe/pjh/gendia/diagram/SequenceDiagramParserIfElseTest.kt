@@ -32,17 +32,17 @@ class SequenceDiagramParserIfElseTest : SeqBasePlatform() {
         println(code)
 
         val expected = """
-	autonumber
-
-	actor User
-
-	participant User
-	participant sequence.ConditionalTestSample
-
-	User->>sequence.ConditionalTestSample:testRun1
-	alt 분기 처리 타입1
-		sequence.ConditionalTestSample->>sequence.ConditionalTestSample:서브 메소드 콜:newMethod
-	end
+            autonumber
+        
+            actor User
+        
+            participant User
+            participant sequence.ConditionalTestSample
+        
+            User->>sequence.ConditionalTestSample:testRun1
+            alt 분기 처리 타입1
+                sequence.ConditionalTestSample->>sequence.ConditionalTestSample:서브 메소드 콜:newMethod
+            end
             """
 
         TestCase.assertEquals(
@@ -68,17 +68,50 @@ class SequenceDiagramParserIfElseTest : SeqBasePlatform() {
         println(code)
 
         val expected = """
-	autonumber
+            autonumber
+        
+            actor User
+        
+            participant User
+            participant sequence.ConditionalTestSample
+        
+            User->>sequence.ConditionalTestSample:testRun1
+            alt 분기 처리 타입1
+                sequence.ConditionalTestSample->>sequence.ConditionalTestSample:서브 메소드 콜:newMethod
+            end
+            """
 
-	actor User
+        TestCase.assertEquals(
+            expected.replace(Regex("([\\t\\s]+)"), "").trimIndent(),
+            code.replace(Regex("([\\t\\s]+)"), "").trimIndent()
+        )
+    }
 
-	participant User
-	participant sequence.ConditionalTestSample
+    fun testGenerateByIfElse3() {
 
-	User->>sequence.ConditionalTestSample:testRun1
-	alt 분기 처리 타입1
-		sequence.ConditionalTestSample->>sequence.ConditionalTestSample:서브 메소드 콜:newMethod
-	end
+
+        val sd = fileAndParamInit(
+            "sequence/ConditionalTestSample.java",
+            "sequence.ConditionalTestSample.testRun3"
+        )
+        sd.collection();
+        sd.analysis();
+
+        val code = sd.generate();
+        println(code)
+
+        val expected = """
+            autonumber
+        
+            actor User
+        
+            participant User
+            participant sequence.ConditionalTestSample
+        
+            User->>sequence.ConditionalTestSample:testRun1
+            alt 분기 처리 타입1
+                sequence.ConditionalTestSample->>sequence.ConditionalTestSample:서브 메소드 콜:newMethod
+            end
             """
 
         TestCase.assertEquals(
