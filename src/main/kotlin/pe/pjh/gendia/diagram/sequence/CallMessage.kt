@@ -1,5 +1,7 @@
 package pe.pjh.gendia.diagram.sequence
 
+import pe.pjh.gendia.diagram.UMLType
+
 /**
  * 기본 메시지
  */

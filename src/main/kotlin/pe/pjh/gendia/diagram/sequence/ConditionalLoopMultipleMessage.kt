@@ -3,6 +3,7 @@ package pe.pjh.gendia.diagram.sequence
 import com.intellij.psi.PsiBlockStatement
 import com.intellij.psi.PsiConditionalLoopStatement
 import pe.pjh.gendia.diagram.TabUtil
+import pe.pjh.gendia.diagram.UMLType
 
 /**
  * For, While 조건 루프

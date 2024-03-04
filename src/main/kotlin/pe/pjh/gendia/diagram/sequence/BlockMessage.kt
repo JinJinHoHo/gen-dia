@@ -1,6 +1,7 @@
 package pe.pjh.gendia.diagram.sequence
 
 import com.intellij.psi.*
+import pe.pjh.gendia.diagram.UMLType
 import pe.pjh.gendia.diagram.UndefindOperationException
 
 /**
@@ -13,7 +14,7 @@ open class BlockMessage(val callee: Participant) : Message {
     constructor(
         callee: Participant,
         psiElement: PsiElement, comment: String?
-    ) : this(callee){
+    ) : this(callee) {
         addMessage(psiElement, comment)
     }
 
@@ -80,6 +81,10 @@ open class BlockMessage(val callee: Participant) : Message {
                 subMessages.add(ConditionalLoopMultipleMessage(callee, psiElement, comment))
             }
 
+            is PsiIfStatement -> {
+                subMessages.add(IfElseConditionalMultipleMessage(callee, comment, psiElement))
+            }
+
             is PsiExpressionStatement -> {
 
                 //psiCall 추출
@@ -102,9 +107,6 @@ open class BlockMessage(val callee: Participant) : Message {
 
             }
 
-            is PsiIfStatement -> {
-                subMessages.add(IfConditionalMultipleMessage(callee, comment, psiElement))
-            }
 
             else -> {
                 throw UndefindOperationException("Not Statement ${psiElement}")

@@ -5,33 +5,13 @@ import com.intellij.psi.PsiIfStatement
 import com.intellij.psi.PsiStatement
 import pe.pjh.gendia.diagram.TabUtil
 
-class IfConditionalMultipleMessage(
+abstract class ConditionalMultipleMessage(
     override val callee: Participant,
-    val name: String?,
-    psiIfStatement: PsiIfStatement,
+    open val name: String?,
 ) : MultipleBlockMessage(callee) {
 
-    init {
-        //루프는 단일 그룹메시지
 
-        var tempPsiIfStatement: PsiIfStatement? = psiIfStatement;
-        do {
-            if (tempPsiIfStatement?.thenBranch != null) {
-                val expression: PsiExpression? = tempPsiIfStatement.condition
-                conditionalBlock(tempPsiIfStatement.thenBranch, expression?.text, callee)
-            }
-
-            tempPsiIfStatement = if (tempPsiIfStatement?.elseBranch is PsiIfStatement) {
-                tempPsiIfStatement.elseBranch as PsiIfStatement
-            } else {
-                conditionalBlock(tempPsiIfStatement?.elseBranch, "else", callee)
-                null
-            }
-        } while (tempPsiIfStatement != null)
-
-    }
-
-    private fun conditionalBlock(
+    protected fun conditionalBlock(
         psiStatement: PsiStatement?,
         expression: String?,
         callee: Participant
@@ -42,10 +22,15 @@ class IfConditionalMultipleMessage(
         blockMessages.add(ExpressionBlockMessage(callee, psiStatement, "${name}", expression))
     }
 
+    abstract fun mark(): ConditionalMarkType
+
     override fun getCodeLine(depth: Int): String {
 
         if (blockMessages.isEmpty()) return ""
+
+        val markType = mark()
         var code = TabUtil.textLine(depth, "Note right of ${callee.name}: ${name}")
+
 
         blockMessages.forEachIndexed { index, it ->
             run {
@@ -53,13 +38,13 @@ class IfConditionalMultipleMessage(
                     val title = if (it is ExpressionBlockMessage) it.getExpression() else name
                     code += TabUtil.textLine(
                         depth,
-                        if (index == 0) "alt ${title}" else "else ${title}"
+                        if (index == 0) "${markType.mark1} ${title}" else "${markType.mark2} ${title}"
                     )
                     code += it.getCodeLine(depth + 1)
                 }
             }
         }
 
-        return code + TabUtil.textLine(depth, "end")
+        return code + TabUtil.textLine(depth, markType.mark3)
     }
 }
