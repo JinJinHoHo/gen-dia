@@ -9,8 +9,8 @@ import pe.pjh.gendia.diagram.TabUtil
  */
 class ConditionalLoopMultipleMessage(
     override val callee: Participant,
-    private val name: String,
     psiConditionalLoopStatement: PsiConditionalLoopStatement,
+    private val comment: String?,
 
     ) : MultipleBlockMessage(callee) {
 
@@ -22,7 +22,7 @@ class ConditionalLoopMultipleMessage(
         blockMessages.add(blockMessage)
 
         val psiStatement = psiConditionalLoopStatement.body as PsiBlockStatement
-        blockMessage.subMessageParsing(psiStatement.codeBlock)
+        blockMessage.addMessage(psiStatement, comment)
     }
 
     override fun getCodeLine(depth: Int): String {
@@ -33,7 +33,7 @@ class ConditionalLoopMultipleMessage(
         if (groupMessage.subMessages.isEmpty()) return ""
 
         //
-        var code = TabUtil.textLine(depth, "loop $name")
+        var code = TabUtil.textLine(depth, "loop $comment")
         code += groupMessage.getCodeLine(depth + 1)
         code += TabUtil.textLine(depth, "end")
         return code

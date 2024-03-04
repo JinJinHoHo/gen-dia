@@ -1,15 +1,22 @@
 package pe.pjh.gendia.diagram.sequence
 
 import com.intellij.psi.*
-import com.intellij.psi.impl.source.tree.java.PsiMethodCallExpressionImpl
 import pe.pjh.gendia.diagram.UndefindOperationException
 
 /**
  * 메시지 그룹(하위로 n개의 메시지를 갖고 있음)
  */
-open class BlockMessage(open val callee: Participant) : Message {
+open class BlockMessage(val callee: Participant) : Message {
 
-    val subMessages = mutableListOf<Message>()
+    val subMessages: MutableList<Message> = mutableListOf()
+
+    constructor(
+        callee: Participant,
+        psiElement: PsiElement, comment: String?
+    ) : this(callee){
+        addMessage(psiElement, comment)
+    }
+
     override fun getCode(): String {
         TODO("Not yet implemented")
     }
@@ -23,7 +30,7 @@ open class BlockMessage(open val callee: Participant) : Message {
         return code
     }
 
-    fun subMessageParsing(psiCodeBlock: PsiCodeBlock?) {
+    private fun addSubMessage(psiCodeBlock: PsiCodeBlock?, comment: String?) {
 
         if (psiCodeBlock == null) return
 
@@ -33,18 +40,16 @@ open class BlockMessage(open val callee: Participant) : Message {
 
         var index = 0
         do {
-            val it = psiElementList.get(index)
-
-            when (it) {
+            when (val it = psiElementList.get(index)) {
                 is PsiComment -> {
 
                     if (it.text.indexOf("//+") != -1) {
                         //코멘트 내용 추출
-                        val comment = it.text.substringAfterLast("//+")
+                        val tempComment = it.text.substringAfterLast("//+")
 
                         //코멘트 다음 라인 psiElement
                         val psiElement: PsiElement = it.nextSibling.nextSibling
-                        addMessageByPsiType(psiElement, comment)
+                        addMessage(psiElement, tempComment)
                         index = psiElementList.indexOf(psiElement)
                     }
                 }
@@ -52,7 +57,7 @@ open class BlockMessage(open val callee: Participant) : Message {
                 else -> {
                     if (it.lastChild is PsiBlockStatement) {
                         //하위에 코드블록이 있을 경우 재귀호출
-                        subMessageParsing((it.lastChild as PsiBlockStatement).codeBlock)
+                        addSubMessage((it.lastChild as PsiBlockStatement).codeBlock, comment)
                     }
                 }
             }
@@ -60,11 +65,19 @@ open class BlockMessage(open val callee: Participant) : Message {
         } while (index < psiElementList.size)
     }
 
-    fun addMessageByPsiType(psiElement: PsiElement, comment: String) {
+    fun addMessage(psiElement: PsiElement, comment: String?) {
         when (psiElement) {
 
+            is PsiBlockStatement -> {
+                addSubMessage(psiElement.codeBlock, comment)
+            }
+
+            is PsiMethod -> {
+                addSubMessage(psiElement.body, comment)
+            }
+
             is PsiConditionalLoopStatement -> {
-                subMessages.add(ConditionalLoopMultipleMessage(callee, comment, psiElement))
+                subMessages.add(ConditionalLoopMultipleMessage(callee, psiElement, comment))
             }
 
             is PsiExpressionStatement -> {

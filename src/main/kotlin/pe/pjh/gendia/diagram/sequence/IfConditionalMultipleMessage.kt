@@ -1,81 +1,65 @@
 package pe.pjh.gendia.diagram.sequence
 
-import com.intellij.psi.PsiBinaryExpression
-import com.intellij.psi.PsiBlockStatement
 import com.intellij.psi.PsiExpression
-import com.intellij.psi.PsiExpressionStatement
 import com.intellij.psi.PsiIfStatement
 import com.intellij.psi.PsiStatement
 import pe.pjh.gendia.diagram.TabUtil
 
 class IfConditionalMultipleMessage(
     override val callee: Participant,
-    val name: String,
+    val name: String?,
     psiIfStatement: PsiIfStatement,
 ) : MultipleBlockMessage(callee) {
 
     init {
-        println("thenBranch ${psiIfStatement.thenBranch}")
-        println("elseBranch ${psiIfStatement.elseBranch}")
-
-
         //루프는 단일 그룹메시지
 
         var tempPsiIfStatement: PsiIfStatement? = psiIfStatement;
         do {
             if (tempPsiIfStatement?.thenBranch != null) {
                 val expression: PsiExpression? = tempPsiIfStatement.condition
-                putCase(tempPsiIfStatement.thenBranch, expression?.text, callee)
+                conditionalBlock(tempPsiIfStatement.thenBranch, expression?.text, callee)
             }
 
             tempPsiIfStatement = if (tempPsiIfStatement?.elseBranch is PsiIfStatement) {
                 tempPsiIfStatement.elseBranch as PsiIfStatement
             } else {
-                putCase(tempPsiIfStatement?.elseBranch, "", callee)
+                conditionalBlock(tempPsiIfStatement?.elseBranch, "else", callee)
                 null
             }
         } while (tempPsiIfStatement != null)
 
     }
 
-    private fun putCase(
+    private fun conditionalBlock(
         psiStatement: PsiStatement?,
         expression: String?,
         callee: Participant
     ) {
 
-        if (psiStatement == null) return;
+        if (psiStatement == null) return
 
-        val blockMessage = BlockMessage(callee)
-
-        when (psiStatement) {
-            is PsiBlockStatement -> {
-                blockMessage.subMessageParsing(psiStatement.codeBlock)
-            }
-
-            is PsiExpressionStatement -> {
-                blockMessage.addMessageByPsiType(psiStatement, "${name}:${expression}")
-            }
-        }
-        blockMessages.add(blockMessage)
+        blockMessages.add(ExpressionBlockMessage(callee, psiStatement, "${name}", expression))
     }
 
     override fun getCodeLine(depth: Int): String {
 
         if (blockMessages.isEmpty()) return ""
+        var code = TabUtil.textLine(depth, "Note right of ${callee.name}: ${name}")
 
-        var code = ""
-
-        blockMessages.forEach {
-
-            if (it.subMessages.isEmpty()) return@forEach
-
-            code += TabUtil.textLine(
-                depth, if (code.isEmpty()) "alt $name" else "else $name"
-            )
-            code += it.getCodeLine(depth + 1)
+        blockMessages.forEachIndexed { index, it ->
+            run {
+                if (!it.subMessages.isEmpty()) {
+                    val title = if (it is ExpressionBlockMessage) it.getExpression() else name
+                    code += TabUtil.textLine(
+                        depth,
+                        if (index == 0) "alt ${title}" else "else ${title}"
+                    )
+                    code += it.getCodeLine(depth + 1)
+                }
+            }
         }
-        code += TabUtil.textLine(depth, "end")
-        return code
+
+        return code + TabUtil.textLine(depth, "end")
     }
 }

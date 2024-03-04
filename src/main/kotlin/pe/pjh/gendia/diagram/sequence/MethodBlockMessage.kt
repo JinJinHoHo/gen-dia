@@ -5,7 +5,7 @@ import com.intellij.psi.PsiType
 
 class MethodBlockMessage(
     caller: Participant,
-    override val callee: Participant,
+    callee: Participant,
     psiMethod: PsiMethod,
     name: String?
 ) : BlockMessage(callee) {
@@ -24,7 +24,7 @@ class MethodBlockMessage(
         }
         callMessage = CallMessage(caller, callee, title, MessageArrowType.SolidLineWithArrowhead)
 
-        subMessageParsing(psiMethod.body)
+        addMessage(psiMethod, null)
 
         //반환 가능 한 값이 있을 경우
         val returnType: PsiType? = psiMethod.returnType

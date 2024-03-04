@@ -75,9 +75,12 @@ class SequenceDiagramParserIfElseTest : SeqBasePlatform() {
             participant User
             participant sequence.ConditionalTestSample
         
-            User->>sequence.ConditionalTestSample:testRun1
-            alt 분기 처리 타입1
+            User->>sequence.ConditionalTestSample:testRun2
+            Note right of sequence.ConditionalTestSample: 분기 처리 타입2
+            alt i == 5
                 sequence.ConditionalTestSample->>sequence.ConditionalTestSample:서브 메소드 콜:newMethod
+            else else
+                sequence.ConditionalTestSample->>sequence.ConditionalTestSample:System.out.println
             end
             """
 
@@ -108,9 +111,20 @@ class SequenceDiagramParserIfElseTest : SeqBasePlatform() {
             participant User
             participant sequence.ConditionalTestSample
         
-            User->>sequence.ConditionalTestSample:testRun1
-            alt 분기 처리 타입1
+            User->>sequence.ConditionalTestSample:testRun3
+            Note right of sequence.ConditionalTestSample: 분기 처리 타입2
+            alt i == 5
                 sequence.ConditionalTestSample->>sequence.ConditionalTestSample:서브 메소드 콜:newMethod
+            else i == 7
+                sequence.ConditionalTestSample->>sequence.ConditionalTestSample:서브 메소드 콜:newMethod
+            else else
+                sequence.ConditionalTestSample->>sequence.ConditionalTestSample:System.out.println
+            end
+            Note right of sequence.ConditionalTestSample: 서브 메소드 콜
+            alt 1 == 5
+                sequence.ConditionalTestSample->>sequence.ConditionalTestSample:서브 메소드 콜:newMethod
+            else else
+                sequence.ConditionalTestSample->>sequence.ConditionalTestSample:System.out.println
             end
             """
 
