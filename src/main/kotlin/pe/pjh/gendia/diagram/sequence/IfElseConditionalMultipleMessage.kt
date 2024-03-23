@@ -4,10 +4,11 @@ import com.intellij.psi.PsiExpression
 import com.intellij.psi.PsiIfStatement
 
 class IfElseConditionalMultipleMessage(
+    override val caller: Participant,
     override val callee: Participant,
     override val name: String?,
     psiIfStatement: PsiIfStatement,
-) : ConditionalMultipleMessage(callee, name) {
+) : ConditionalMultipleMessage(caller, callee, name) {
 
     init {
         //루프는 단일 그룹메시지

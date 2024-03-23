@@ -15,8 +15,8 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
     fun testCollection() {
 
         val sd = fileAndParamInit(
-            "sequence/SimpleBase.java",
-            "sequence.SimpleBase.testRun"
+            "testData/sequence/SimpleBase.java",
+            "testData.sequence.SimpleBase.testRun"
         )
 
         sd.collection();
@@ -35,8 +35,8 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
     fun testAnalysis() {
 
         val sd = fileAndParamInit(
-            "sequence/SimpleBase.java",
-            "sequence.SimpleBase.testRun"
+            "testData/sequence/SimpleBase.java",
+            "testData.sequence.SimpleBase.testRun"
         )
 
         sd.collection()
@@ -47,8 +47,8 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
 
 
         val sd = fileAndParamInit(
-            "sequence/SimpleBase.java",
-            "sequence.SimpleBase.testRun"
+            "testData/sequence/SimpleBase.java",
+            "testData.sequence.SimpleBase.testRun"
         )
 
         sd.collection()
@@ -74,8 +74,8 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
 
 
         val sd = fileAndParamInit(
-            "sequence/SimpleBase.java",
-            "sequence.SimpleBase.testRun2"
+            "testData/sequence/SimpleBase.java",
+            "testData.sequence.SimpleBase.testRun2"
         )
 
         sd.collection()
@@ -102,9 +102,40 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
     }
 
     fun testGenerate3() {
+
+
         val sd = fileAndParamInit(
-            "sequence/SimpleReturn.java",
-            "sequence.SimpleReturn.testRun"
+            "testData/sequence/SimpleBase.java",
+            "testData.sequence.SimpleBase.testRun3"
+        )
+
+        sd.collection()
+        sd.analysis()
+
+        val code = sd.generate()
+        println(code)
+        TestCase.assertEquals(
+            """
+            autonumber
+        
+            actor User
+        
+            participant User
+            participant sequence.SimpleBase
+        
+            User->>sequence.SimpleBase:testRun2
+            sequence.SimpleBase->>sequence.SimpleBase:System.out.println
+            sequence.SimpleBase->>sequence.SimpleBase:TestFun.returnStr
+            sequence.SimpleBase->>sequence.SimpleBase:staticTest
+            """.replace(Regex("([\\t\\s]+)"), ""),
+            code.replace(Regex("([\\t\\s]+)"), "")
+        )
+    }
+
+    fun testGenerate4() {
+        val sd = fileAndParamInit(
+            "testData/sequence/SimpleReturn.java",
+            "testData.sequence.SimpleReturn.testRun"
         )
 
         sd.collection()

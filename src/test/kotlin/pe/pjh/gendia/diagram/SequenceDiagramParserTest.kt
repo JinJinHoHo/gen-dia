@@ -15,8 +15,8 @@ class SequenceDiagramParserTest : SeqBasePlatform() {
     fun testCollection() {
 
         val sd = fileAndParamInit(
-            "sequence/SimpleBase.java",
-            "sequence.SimpleNoReturn.testRun"
+            "testData/sequence/SimpleBase.java",
+            "testData.sequence.SimpleNoReturn.testRun"
         )
 
         sd.collection();
@@ -35,8 +35,8 @@ class SequenceDiagramParserTest : SeqBasePlatform() {
     fun testAnalysis() {
 
         val sd = fileAndParamInit(
-            "sequence/SimpleBase.java",
-            "sequence.SimpleNoReturn.testRun"
+            "testData/sequence/SimpleBase.java",
+            "testData.sequence.SimpleNoReturn.testRun"
         )
 
         sd.collection()
@@ -47,8 +47,8 @@ class SequenceDiagramParserTest : SeqBasePlatform() {
 
 
         val sd = fileAndParamInit(
-            "sequence/SimpleBase.java",
-            "sequence.SimpleNoReturn.testRun"
+            "testData/sequence/SimpleBase.java",
+            "testData.sequence.SimpleNoReturn.testRun"
         )
 
         sd.collection()
@@ -71,8 +71,8 @@ class SequenceDiagramParserTest : SeqBasePlatform() {
 
     fun testGenerate2() {
         val sd = fileAndParamInit(
-            "sequence/SimpleReturn.java",
-            "sequence.SimpleReturn.testRun"
+            "testData/sequence/SimpleReturn.java",
+            "testData.sequence.SimpleReturn.testRun"
         )
 
         sd.collection()
@@ -102,8 +102,8 @@ class SequenceDiagramParserTest : SeqBasePlatform() {
     fun testGenerateByLoop() {
 
         val sd = fileAndParamInit(
-            "sequence/SimpleLoop.java",
-            "sequence.SimpleLoop.testRun1,sequence.SimpleLoop.testRun2"
+            "testData/sequence/SimpleLoop.java",
+            "testData.sequence.SimpleLoop.testRun1,sequence.SimpleLoop.testRun2"
         )
         sd.collection()
         sd.analysis()
@@ -141,8 +141,8 @@ class SequenceDiagramParserTest : SeqBasePlatform() {
     fun testGenerateByInBlock() {
 
         val sd = fileAndParamInit(
-            "sequence/SimpleInBlock.java",
-            "sequence.SimpleInBlock.testRun1"
+            "testData/sequence/SimpleInBlock.java",
+            "testData.sequence.SimpleInBlock.testRun1"
         )
         sd.collection()
         sd.analysis()

@@ -22,8 +22,8 @@ class SequenceDiagramParserIfElseTest : SeqBasePlatform() {
 
 
         val sd = fileAndParamInit(
-            "sequence/ConditionalTestSample.java",
-            "sequence.ConditionalTestSample.testRun1"
+            "testData/sequence/ConditionalTestSample.java",
+            "testData.sequence.ConditionalTestSample.testRun1"
         )
         sd.collection();
         sd.analysis();
@@ -58,8 +58,8 @@ class SequenceDiagramParserIfElseTest : SeqBasePlatform() {
 
 
         val sd = fileAndParamInit(
-            "sequence/ConditionalTestSample.java",
-            "sequence.ConditionalTestSample.testRun2"
+            "testData/sequence/ConditionalTestSample.java",
+            "testData.sequence.ConditionalTestSample.testRun2"
         )
         sd.collection();
         sd.analysis();
@@ -94,8 +94,8 @@ class SequenceDiagramParserIfElseTest : SeqBasePlatform() {
 
 
         val sd = fileAndParamInit(
-            "sequence/ConditionalTestSample.java",
-            "sequence.ConditionalTestSample.testRun3"
+            "testData/sequence/ConditionalTestSample.java",
+            "testData.sequence.ConditionalTestSample.testRun3"
         )
         sd.collection();
         sd.analysis();

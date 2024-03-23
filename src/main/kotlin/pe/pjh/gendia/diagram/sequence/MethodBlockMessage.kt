@@ -8,7 +8,7 @@ class MethodBlockMessage(
     callee: Participant,
     psiMethod: PsiMethod,
     name: String?
-) : BlockMessage(callee) {
+) : BlockMessage(caller, callee) {
 
     private val callMessage: CallMessage
     private var backMessage: CallMessage? = null

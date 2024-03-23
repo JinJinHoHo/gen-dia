@@ -1,5 +1,5 @@
 
-package sequence
+package testData.sequence;
 
 public class SimpleInBlock {
     public String testRun1() {
@@ -10,12 +10,12 @@ public class SimpleInBlock {
             newMethod();
         }
 
-        int idx = 10
-        if(idx == 10){
+        int idx = 10;
+        if (idx == 10) {
             //+서브 메소드 콜
             newMethod();
         }
-        return "테스트"
+        return "테스트";
     }
 
     public void newMethod() {

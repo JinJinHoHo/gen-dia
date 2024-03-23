@@ -1,25 +1,24 @@
 package pe.pjh.gendia.diagram.sequence
 
-import com.intellij.psi.PsiExpression
-import com.intellij.psi.PsiIfStatement
-import com.intellij.psi.PsiStatement
+import com.intellij.psi.PsiElement
 import pe.pjh.gendia.diagram.TabUtil
 
 abstract class ConditionalMultipleMessage(
+    override val caller: Participant,
     override val callee: Participant,
     open val name: String?,
-) : MultipleBlockMessage(callee) {
+) : MultipleBlockMessage(caller, callee) {
 
 
     protected fun conditionalBlock(
-        psiStatement: PsiStatement?,
+        psiElement: PsiElement?,
         expression: String?,
         callee: Participant
     ) {
 
-        if (psiStatement == null) return
+        if (psiElement == null) return
 
-        blockMessages.add(ExpressionBlockMessage(callee, psiStatement, "${name}", expression))
+        blockMessages.add(ExpressionBlockMessage(caller, callee, psiElement, "${name}", expression))
     }
 
     abstract fun mark(): ConditionalMarkType

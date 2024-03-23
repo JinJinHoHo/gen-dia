@@ -1,4 +1,4 @@
-package pe.pjh.gendia.diagram;
+package testData.sequence;
 
 public class TestFun {
     public static String returnStr() {
@@ -7,5 +7,13 @@ public class TestFun {
 
     public static void printStr() {
         System.out.println("printStr");
+    }
+
+    public void testCall() {
+        System.out.println("printStr");
+    }
+
+    public Integer testReturnCall() {
+        return 1 + 1;
     }
 }

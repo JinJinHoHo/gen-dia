@@ -9,17 +9,18 @@ import pe.pjh.gendia.diagram.UMLType
  * For, While 조건 루프
  */
 class ConditionalLoopMultipleMessage(
+    override val caller: Participant,
     override val callee: Participant,
     psiConditionalLoopStatement: PsiConditionalLoopStatement,
     private val comment: String?,
 
-    ) : MultipleBlockMessage(callee) {
+    ) : MultipleBlockMessage(caller, callee) {
 
 
     init {
 
         //루프는 단일 그룹메시지.
-        val blockMessage = BlockMessage(callee)
+        val blockMessage = BlockMessage(caller, callee)
         blockMessages.add(blockMessage)
 
         val psiStatement = psiConditionalLoopStatement.body as PsiBlockStatement

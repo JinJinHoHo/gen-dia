@@ -26,6 +26,6 @@ open class SeqBasePlatform : BasePlatformTestCase() {
 
 
     override fun getTestDataPath(): String {
-        return "src/test/testData"
+        return "src/test/java"
     }
 }

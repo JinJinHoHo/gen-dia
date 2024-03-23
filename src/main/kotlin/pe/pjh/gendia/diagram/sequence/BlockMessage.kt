@@ -7,14 +7,18 @@ import pe.pjh.gendia.diagram.UndefindOperationException
 /**
  * 메시지 그룹(하위로 n개의 메시지를 갖고 있음)
  */
-open class BlockMessage(val callee: Participant) : Message {
+open class BlockMessage(
+    val caller: Participant,
+    val callee: Participant
+) : Message {
 
     val subMessages: MutableList<Message> = mutableListOf()
 
     constructor(
+        caller: Participant,
         callee: Participant,
         psiElement: PsiElement, comment: String?
-    ) : this(callee) {
+    ) : this(caller, callee) {
         addMessage(psiElement, comment)
     }
 
@@ -67,22 +71,68 @@ open class BlockMessage(val callee: Participant) : Message {
     }
 
     fun addMessage(psiElement: PsiElement, comment: String?) {
+        println("${psiElement}--${psiElement.text}:'${comment}'")
         when (psiElement) {
 
-            is PsiBlockStatement -> {
-                addSubMessage(psiElement.codeBlock, comment)
+            is PsiCodeBlock -> addSubMessage(psiElement, comment)
+
+            is PsiBlockStatement -> addSubMessage(psiElement.codeBlock, comment)
+
+            is PsiMethod -> addSubMessage(psiElement.body, comment)
+
+            is PsiConditionalLoopStatement ->
+                subMessages.add(ConditionalLoopMultipleMessage(caller, callee, psiElement, comment))
+
+            is PsiIfStatement -> subMessages.add(IfElseConditionalMultipleMessage(caller, callee, comment, psiElement))
+
+            is PsiTryStatement -> subMessages.add(
+                TryCacheConditionalMultipleMessage(
+                    caller,
+                    callee,
+                    comment,
+                    psiElement
+                )
+            )
+
+            is PsiMethodCallExpression -> {
+                val psiMethod: PsiMethod? = psiElement.resolveMethod()
+                if (psiMethod != null) {
+                    addMessage(psiMethod, comment)
+                } else {
+                    addMessage(psiElement.methodExpression, comment)
+                }
             }
 
-            is PsiMethod -> {
-                addSubMessage(psiElement.body, comment)
-            }
-
-            is PsiConditionalLoopStatement -> {
-                subMessages.add(ConditionalLoopMultipleMessage(callee, psiElement, comment))
-            }
-
-            is PsiIfStatement -> {
-                subMessages.add(IfElseConditionalMultipleMessage(callee, comment, psiElement))
+            is PsiReferenceExpression -> {
+                var temp = psiElement.resolve();
+                if (temp != null) {
+//                    addMessage(temp, comment)
+                    //(temp as PsiFieldImpl).containingClass
+                    subMessages.add(
+                        CallMessage(
+                            callee,
+                            callee,
+                            comment,
+                            psiElement.text,
+                            MessageArrowType.SolidLineWithArrowhead
+                        )
+                    )
+                } else {
+                    temp = psiElement.qualifierExpression;
+                    if (temp != null) {
+                        addMessage(temp, comment)
+                    } else {
+                        subMessages.add(
+                            CallMessage(
+                                callee,
+                                callee,
+                                comment,
+                                psiElement.text,
+                                MessageArrowType.SolidLineWithArrowhead
+                            )
+                        )
+                    }
+                }
             }
 
             is PsiExpressionStatement -> {
@@ -93,22 +143,24 @@ open class BlockMessage(val callee: Participant) : Message {
                     .getOrNull(0)
 
                 val method: PsiMethod? = psiCall?.resolveMethod()
-                if (method != null) subMessages.add(MethodBlockMessage(callee, callee, method, comment))
-                else {
-                    subMessages.add(
-                        CallMessage(
-                            callee,
-                            callee,
-                            (psiCall as PsiMethodCallExpression).methodExpression.text,
-                            MessageArrowType.SolidLineWithArrowhead
-                        )
-                    )
+                if (method != null) {
+                    //클래스 내부 메소드 호출시.
+                    subMessages.add(MethodBlockMessage(callee, callee, method, comment))
+                } else {
+                    //외부 클래스 메소드 호출시
+                    addMessage((psiCall as PsiMethodCallExpression), comment)
                 }
-
             }
 
+            is PsiDeclarationStatement -> {
+                val psiElements: Array<PsiElement> = psiElement.declaredElements;
+                psiElements.forEach {
+                    println((it as PsiLocalVariable).initializer)
+                }
+            }
 
             else -> {
+                println(psiElement.text)
                 throw UndefindOperationException("Not Statement ${psiElement}")
             }
         }

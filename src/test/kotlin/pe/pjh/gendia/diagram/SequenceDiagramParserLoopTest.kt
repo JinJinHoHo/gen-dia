@@ -17,8 +17,8 @@ class SequenceDiagramParserLoopTest : SeqBasePlatform() {
     fun testGenerateByLoop() {
 
         val sd = fileAndParamInit(
-            "sequence/SimpleLoop.java",
-            "sequence.SimpleLoop.testRun1,sequence.SimpleLoop.testRun2"
+            "testData/sequence/SimpleLoop.java",
+            "testData.sequence.SimpleLoop.testRun1,sequence.SimpleLoop.testRun2"
         )
         sd.collection()
         sd.analysis()
@@ -56,8 +56,8 @@ class SequenceDiagramParserLoopTest : SeqBasePlatform() {
     fun testGenerateByInBlock() {
 
         val sd = fileAndParamInit(
-            "sequence/SimpleInBlock.java",
-            "sequence.SimpleInBlock.testRun1"
+            "testData/sequence/SimpleInBlock.java",
+            "testData.sequence.SimpleInBlock.testRun1"
         )
         sd.collection()
         sd.analysis()
