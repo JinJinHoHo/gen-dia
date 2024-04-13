@@ -2,7 +2,7 @@ package pe.pjh.gendia.diagram
 
 import com.intellij.openapi.project.Project
 
-class ClassDiagramParser(project: Project,diagramGenInfo: DiagramGenInfo) : DiagramParsingProcess {
+class ClassDiagramParser(project: Project, diagramGenInfo: DiagramGenInfo) : DiagramParsingProcess {
     override fun collection() {
         TODO("Not yet implemented")
     }
@@ -11,7 +11,7 @@ class ClassDiagramParser(project: Project,diagramGenInfo: DiagramGenInfo) : Diag
         TODO("Not yet implemented")
     }
 
-    override fun generate():String {
+    override fun generate(): String {
         TODO("Not yet implemented")
     }
 

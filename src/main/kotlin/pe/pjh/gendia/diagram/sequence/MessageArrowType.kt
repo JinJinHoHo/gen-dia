@@ -15,5 +15,4 @@ enum class MessageArrowType(expression: String) {
     DottedLineWithAnOpenArrowAtTheEnd("--)");
 
     val expression = expression
-        get() = field
 }

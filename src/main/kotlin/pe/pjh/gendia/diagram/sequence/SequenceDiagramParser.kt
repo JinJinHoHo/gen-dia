@@ -23,7 +23,6 @@ class SequenceDiagramParser(
     private val diagramParam: SequenceDiagramParam = diagramGenInfo.diagramParam
 
     var startPointPsiMethods: MutableList<PsiMethod> = mutableListOf()
-        get() = field
 
     private val participantMap = mutableMapOf<String, Participant>()
 
@@ -72,7 +71,7 @@ class SequenceDiagramParser(
         var code = ""
 
         //기본 설정 영역
-        if (diagramParam.autonumber){
+        if (diagramParam.autonumber) {
             code += TabUtil.textLine(1, "autonumber")
             code += "\n"
         }
@@ -82,7 +81,7 @@ class SequenceDiagramParser(
         code += "\n"
 
         //Participant 영역
-        participantMap.forEach { (t, u) ->code += TabUtil.textLine(1, "participant " + u.name)}
+        participantMap.forEach { (t, u) -> code += TabUtil.textLine(1, "participant " + u.name) }
         code += "\n"
 
         //Messages 영역
