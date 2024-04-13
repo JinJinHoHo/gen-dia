@@ -18,7 +18,7 @@ abstract class ConditionalMultipleMessage(
 
         if (psiElement == null) return
 
-        blockMessages.add(ExpressionBlockMessage(caller, callee, psiElement, "${name}", expression))
+        blockMessages.add(ExpressionBlockMessage(caller, callee, psiElement, "$name", expression))
     }
 
     abstract fun mark(): ConditionalMarkType
@@ -28,16 +28,16 @@ abstract class ConditionalMultipleMessage(
         if (blockMessages.isEmpty()) return ""
 
         val markType = mark()
-        var code = TabUtil.textLine(depth, "Note right of ${callee.name}: ${name}")
+        var code = TabUtil.textLine(depth, "Note right of ${callee.name}: $name")
 
 
         blockMessages.forEachIndexed { index, it ->
             run {
-                if (!it.subMessages.isEmpty()) {
+                if (it.subMessages.isNotEmpty()) {
                     val title = if (it is ExpressionBlockMessage) it.getExpression() else name
                     code += TabUtil.textLine(
                         depth,
-                        if (index == 0) "${markType.mark1} ${title}" else "${markType.mark2} ${title}"
+                        if (index == 0) "${markType.mark1} $title" else "${markType.mark2} $title"
                     )
                     code += it.getCodeLine(depth + 1)
                 }

@@ -24,7 +24,7 @@ public class SimpleBase {
     public void testRun2() {
 
         //+콘솔 출력2
-        TestFun.returnStr();
+//        TestFun.returnStr();
 
         //+콘솔 출력3
         staticTest();

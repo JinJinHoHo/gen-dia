@@ -40,12 +40,10 @@ class DiagramGenAction : IntentionAction {
 
     @Throws(IncorrectOperationException::class)
     override fun invoke(project: Project, editor: Editor, psiFile: PsiFile) {
-        val psiElement = PsiUtilBase.getElementAtCaret(editor)
-        if (psiElement == null) return
 
-        val (uMLType: pe.pjh.gendia.diagram.UMLType, diagramType: pe.pjh.gendia.diagram.DiagramType) = getType(
-            psiElement
-        )
+        val psiElement = PsiUtilBase.getElementAtCaret(editor) ?: return
+
+        val (uMLType: UMLType, diagramType: DiagramType) = getType(psiElement)
 
         val commentList = arrayListOf<String>()
         psiElement.parent.children
@@ -57,7 +55,7 @@ class DiagramGenAction : IntentionAction {
         var sp = ""
         commentList.forEach {
             val keyValue = it.split(":")
-            if ("startpoint".equals(keyValue[0].lowercase(Locale.getDefault()))) {
+            if ("startpoint" == keyValue[0].lowercase(Locale.getDefault())) {
                 sp = keyValue[1].trim()
             }
         }
@@ -76,11 +74,11 @@ class DiagramGenAction : IntentionAction {
     }
 
 
-    private fun getType(psiElement: PsiElement): Pair<pe.pjh.gendia.diagram.UMLType, pe.pjh.gendia.diagram.DiagramType> {
+    private fun getType(psiElement: PsiElement): Pair<UMLType, DiagramType> {
 
         val language = psiElement.language
 
-        if (!(language is MarkdownLanguage)) throw IllegalStateException()
+        if (language !is MarkdownLanguage) throw IllegalStateException()
 
         val psiElementParent = psiElement.parent
 
@@ -98,9 +96,9 @@ class DiagramGenAction : IntentionAction {
 
         if (codeLang == null) throw IllegalStateException()
 
-        val umlType = pe.pjh.gendia.diagram.UMLType.valueOf(codeLang)
+        val umlType = UMLType.valueOf(codeLang)
 
-        val diagramType = pe.pjh.gendia.diagram.DiagramType.valueOf(psiElementParent.children[3].text)
+        val diagramType = DiagramType.valueOf(psiElementParent.children[3].text)
 
         return Pair(umlType, diagramType)
     }

@@ -12,7 +12,7 @@ class TryCacheConditionalMultipleMessage(
     init {
         //루프는 단일 그룹메시지
 
-        val tempPsiTryStatement: PsiTryStatement = psiTryStatement;
+        val tempPsiTryStatement: PsiTryStatement = psiTryStatement
         conditionalBlock(tempPsiTryStatement.tryBlock, "", callee)
 
         tempPsiTryStatement.catchBlocks.forEach {

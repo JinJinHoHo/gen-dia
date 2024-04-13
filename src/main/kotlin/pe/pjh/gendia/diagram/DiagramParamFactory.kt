@@ -7,9 +7,9 @@ object DiagramParamFactory {
     fun dia(project: Project, diagramGenInfo: DiagramGenInfo): DiagramParsingProcess {
         val diagramParsingProcess: DiagramParsingProcess = when (diagramGenInfo.diagramType) {
 
-            DiagramType.classDiagram -> ClassDiagramParser(project, diagramGenInfo)
+            DiagramType.ClassDiagram -> ClassDiagramParser(project, diagramGenInfo)
 
-            DiagramType.sequenceDiagram -> SequenceDiagramParser(project, diagramGenInfo)
+            DiagramType.SequenceDiagram -> SequenceDiagramParser(project, diagramGenInfo)
         }
 
         diagramParsingProcess.collection()

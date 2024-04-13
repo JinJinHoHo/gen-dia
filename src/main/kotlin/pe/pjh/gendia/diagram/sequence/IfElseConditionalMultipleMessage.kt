@@ -13,7 +13,7 @@ class IfElseConditionalMultipleMessage(
     init {
         //루프는 단일 그룹메시지
 
-        var tempPsiIfStatement: PsiIfStatement? = psiIfStatement;
+        var tempPsiIfStatement: PsiIfStatement? = psiIfStatement
         do {
             if (tempPsiIfStatement?.thenBranch != null) {
                 val expression: PsiExpression? = tempPsiIfStatement.condition

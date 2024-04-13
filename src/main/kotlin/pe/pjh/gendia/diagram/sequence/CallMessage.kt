@@ -1,7 +1,5 @@
 package pe.pjh.gendia.diagram.sequence
 
-import pe.pjh.gendia.diagram.UMLType
-
 /**
  * 기본 메시지
  */
@@ -12,7 +10,7 @@ open class CallMessage(
     open val callMsgType: MessageArrowType
 ) : Message {
 
-    var expression: String = ""
+    private var expression: String = ""
 
     constructor(
         caller: Participant, callee: Participant,

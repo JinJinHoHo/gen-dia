@@ -1,11 +1,7 @@
 package pe.pjh.gendia.diagram
 
 import com.intellij.psi.PsiJavaFile
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
-import org.junit.Test
-import pe.pjh.gendia.diagram.sequence.SequenceDiagramParam
-import pe.pjh.gendia.diagram.sequence.SequenceDiagramParser
 
 
 //
@@ -19,11 +15,11 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
             "testData.sequence.SimpleBase.testRun"
         )
 
-        sd.collection();
+        sd.collection()
         sd.startPointPsiMethods.forEach {
             val clz = it.parent
 
-            val packageName: String = (clz.getContainingFile() as PsiJavaFile).getPackageName()
+            val packageName: String = (clz.containingFile as PsiJavaFile).packageName
             println(clz)
             println(packageName)
             println(it.toString())
@@ -69,9 +65,7 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
     }
 
 
-
     fun testGenerate2() {
-
 
         val sd = fileAndParamInit(
             "testData/sequence/SimpleBase.java",
