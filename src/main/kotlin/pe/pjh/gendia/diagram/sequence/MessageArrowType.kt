@@ -1,6 +1,6 @@
 package pe.pjh.gendia.diagram.sequence
 
-enum class MessageArrowType(expression: String) {
+enum class MessageArrowType(val expression: String) {
 
     SolidLineWithoutArrow("->"),
     DottedLineWithoutArrow("-->"),
@@ -14,5 +14,4 @@ enum class MessageArrowType(expression: String) {
     SolidLineWithAnOpenArrowAtTheEnd("-)"),
     DottedLineWithAnOpenArrowAtTheEnd("--)");
 
-    val expression = expression
 }

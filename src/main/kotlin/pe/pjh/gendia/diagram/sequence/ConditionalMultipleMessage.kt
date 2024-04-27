@@ -1,7 +1,9 @@
 package pe.pjh.gendia.diagram.sequence
 
 import com.intellij.psi.PsiElement
+import org.slf4j.LoggerFactory
 import pe.pjh.gendia.diagram.TabUtil
+import pe.pjh.gendia.diagram.sequence.ConditionalLoopMultipleMessage.Companion
 
 abstract class ConditionalMultipleMessage(
     override val caller: Participant,
@@ -9,6 +11,9 @@ abstract class ConditionalMultipleMessage(
     open val name: String?,
 ) : MultipleBlockMessage(caller, callee) {
 
+    companion object {
+        private val logger = LoggerFactory.getLogger(ConditionalMultipleMessage::class.java)
+    }
 
     protected fun conditionalBlock(
         psiElement: PsiElement?,
@@ -43,7 +48,10 @@ abstract class ConditionalMultipleMessage(
                 }
             }
         }
+        code += TabUtil.textLine(depth, markType.mark3);
 
-        return code + TabUtil.textLine(depth, markType.mark3)
+        if (logger.isDebugEnabled) logger.debug(code)
+
+        return code
     }
 }

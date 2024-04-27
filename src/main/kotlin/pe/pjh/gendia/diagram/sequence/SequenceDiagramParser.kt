@@ -26,7 +26,7 @@ class SequenceDiagramParser(
 
     private val participantMap = mutableMapOf<String, Participant>()
 
-    private val messages = mutableListOf<Message>()
+    private val messageModels = mutableListOf<Message>()
 
     override fun collection() {
 
@@ -63,7 +63,7 @@ class SequenceDiagramParser(
             val clazz = JavaParticipant(psiClass)
             participantMap[clazz.name] = clazz
 
-            messages.add(MethodBlockMessage(actor, clazz, it, null))
+            messageModels.add(MethodBlockMessage(actor, clazz, it, null))
         }
     }
 
@@ -85,7 +85,7 @@ class SequenceDiagramParser(
         code += "\n"
 
         //Messages 영역
-        messages.forEach {
+        messageModels.forEach {
             code += it.getCodeLine(1)
         }
         return code

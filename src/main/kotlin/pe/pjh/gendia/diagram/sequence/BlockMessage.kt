@@ -1,6 +1,7 @@
 package pe.pjh.gendia.diagram.sequence
 
 import com.intellij.psi.*
+import org.slf4j.LoggerFactory
 import pe.pjh.gendia.diagram.UndefindOperationException
 
 /**
@@ -8,15 +9,19 @@ import pe.pjh.gendia.diagram.UndefindOperationException
  */
 open class BlockMessage(
     private val caller: Participant,
-    private val callee: Participant
+    private val callee: Participant,
 ) : Message {
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(BlockMessage::class.java)
+    }
 
     val subMessages: MutableList<Message> = mutableListOf()
 
     constructor(
         caller: Participant,
         callee: Participant,
-        psiElement: PsiElement, comment: String?
+        psiElement: PsiElement, comment: String?,
     ) : this(caller, callee) {
         addMessage(psiElement, comment)
     }
@@ -31,13 +36,13 @@ open class BlockMessage(
             val subCode = it.getCodeLine(depth)
             if (subCode.isNotEmpty()) code += subCode
         }
+
         return code
     }
 
 
     fun addMessage(psiElement: PsiElement, comment: String?) {
 
-        println("${psiElement}--${psiElement.text}:'${comment}'")
         when (psiElement) {
 
             is PsiCodeBlock -> addCodeBlockMessage(psiElement, comment)
@@ -77,13 +82,20 @@ open class BlockMessage(
             is PsiExpressionStatement -> addExpressionStatementMessage(psiElement, comment)
 
             is PsiDeclarationStatement -> {
-                psiElement.declaredElements.forEach {
-                    println((it as PsiLocalVariable).initializer)
-                }
+                if (logger.isDebugEnabled)
+                    psiElement.declaredElements.forEach {
+                        logger.debug((it as PsiLocalVariable).initializer.toString())
+                    }
+            }
+
+            //실행 코드가 코멘트일 경우 처리 제외.
+            is PsiComment -> {
+                if (logger.isDebugEnabled) logger.debug("코멘트 무시 ${psiElement.text}")
+                return
             }
 
             else -> {
-                println(psiElement.text)
+                if (logger.isDebugEnabled) logger.debug(psiElement.text)
                 throw UndefindOperationException("Not Statement $psiElement")
             }
         }
@@ -112,8 +124,8 @@ open class BlockMessage(
                 }
 
                 else -> {
+                    //하위에 코드블록이 있을 경우 재귀호출
                     if (it.lastChild is PsiBlockStatement) {
-                        //하위에 코드블록이 있을 경우 재귀호출
                         addCodeBlockMessage((it.lastChild as PsiBlockStatement).codeBlock, comment)
                     }
                 }

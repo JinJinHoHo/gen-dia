@@ -2,6 +2,7 @@ package pe.pjh.gendia.diagram.sequence
 
 import com.intellij.psi.PsiBlockStatement
 import com.intellij.psi.PsiConditionalLoopStatement
+import org.slf4j.LoggerFactory
 import pe.pjh.gendia.diagram.TabUtil
 
 /**
@@ -15,6 +16,9 @@ class ConditionalLoopMultipleMessage(
 
     ) : MultipleBlockMessage(caller, callee) {
 
+    companion object {
+        val logger = LoggerFactory.getLogger(ConditionalLoopMultipleMessage::class.java)
+    }
 
     init {
 
@@ -33,10 +37,14 @@ class ConditionalLoopMultipleMessage(
         //서브 코드에 노츨되는 항목이 없으면 빈값 반환.
         if (groupMessage.subMessages.isEmpty()) return ""
 
+
         //
         var code = TabUtil.textLine(depth, "loop $comment")
         code += groupMessage.getCodeLine(depth + 1)
         code += TabUtil.textLine(depth, "end")
+
+        if (logger.isDebugEnabled) logger.debug(code)
+
         return code
     }
 }

@@ -21,13 +21,16 @@ public class SimpleBase {
     /**
      * 리턴값 없음.
      */
-    public void testRun2() {
+    public void staticMethod() {
 
-        //+콘솔 출력2
+        //+ 외부 static method 무시 처리 테스트
 //        TestFun.returnStr();
 
         //+콘솔 출력3
         staticTest();
+
+        //+내부 static method 호출
+        staticMethodCall();
     }
 
     /**
@@ -41,10 +44,10 @@ public class SimpleBase {
         //+내부 static method
         staticTest();
 
-        //+외부 instatce method
+        //+외부 instance method
         this.testFun.testCall();
 
-        //+외부 instatce return method
+        //+외부 instance return method
         Integer i = this.testFun.testReturnCall();
         System.out.println(i);
     }
@@ -69,6 +72,16 @@ public class SimpleBase {
 
 
     public static void staticTest() {
+        System.out.println("simple:key with spaces1");
+    }
+
+    public static void staticMethodCall() {
+        //+클래스 내부 static Method Call
+        staticMethodInnerCall();
+    }
+
+    public static void staticMethodInnerCall() {
+
         System.out.println("simple:key with spaces1");
     }
 

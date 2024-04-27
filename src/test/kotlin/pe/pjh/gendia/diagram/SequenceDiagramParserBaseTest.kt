@@ -65,11 +65,11 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
     }
 
 
-    fun testGenerate2() {
+    fun testStaticMethod() {
 
         val sd = fileAndParamInit(
             "testData/sequence/SimpleBase.java",
-            "testData.sequence.SimpleBase.testRun2"
+            "testData.sequence.SimpleBase.staticMethod"
         )
 
         sd.collection()
