@@ -49,7 +49,7 @@ class SequenceDiagramParser(
             val m: Array<PsiMethod> = psiClass.findMethodsByName(methodName, false)
             if (m.isEmpty()) throw RuntimeException("$methodName 메소드 없음.")
 
-            //todo 오버로드된 메소드 처리 방향 고민 필요.
+            //todo [예정] 오버로드된 메소드 처리 방향 고민 필요.
             startPointPsiMethods.add(m[0])
         }
     }

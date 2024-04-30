@@ -40,6 +40,12 @@ open class BlockMessage(
         return code
     }
 
+    private fun addSubMessage(message: Message) {
+
+        if (logger.isDebugEnabled) logger.debug(message.toString())
+        subMessages.add(message)
+    }
+
 
     fun addMessage(psiElement: PsiElement, comment: String?) {
 
@@ -55,11 +61,11 @@ open class BlockMessage(
             }
 
             is PsiConditionalLoopStatement ->
-                subMessages.add(ConditionalLoopMultipleMessage(caller, callee, psiElement, comment))
+                addSubMessage(ConditionalLoopMultipleMessage(caller, callee, psiElement, comment))
 
-            is PsiIfStatement -> subMessages.add(IfElseConditionalMultipleMessage(caller, callee, comment, psiElement))
+            is PsiIfStatement -> addSubMessage(IfElseConditionalMultipleMessage(caller, callee, comment, psiElement))
 
-            is PsiTryStatement -> subMessages.add(
+            is PsiTryStatement -> addSubMessage(
                 TryCacheConditionalMultipleMessage(
                     caller,
                     callee,
@@ -82,10 +88,13 @@ open class BlockMessage(
             is PsiExpressionStatement -> addExpressionStatementMessage(psiElement, comment)
 
             is PsiDeclarationStatement -> {
-                if (logger.isDebugEnabled)
+                //todo [예정] 변수에 바로 대입되는 메소드 존재 여부 확인 로직 필요.
+                if (logger.isDebugEnabled) {
+                    logger.debug(psiElement.text)
                     psiElement.declaredElements.forEach {
                         logger.debug((it as PsiLocalVariable).initializer.toString())
                     }
+                }
             }
 
             //실행 코드가 코멘트일 경우 처리 제외.
@@ -116,6 +125,7 @@ open class BlockMessage(
                         //코멘트 내용 추출
                         val tempComment = it.text.substringAfterLast("//+")
 
+                        //todo [예정] 코드 뒤에 인라인 형식으로 된 소스 처리 방식 추가 필요.
                         //코멘트 다음 라인 psiElement
                         val psiElement: PsiElement = it.nextSibling.nextSibling
                         addMessage(psiElement, tempComment)
@@ -127,7 +137,9 @@ open class BlockMessage(
                     //하위에 코드블록이 있을 경우 재귀호출
                     if (it.lastChild is PsiBlockStatement) {
                         addCodeBlockMessage((it.lastChild as PsiBlockStatement).codeBlock, comment)
+                        continue
                     }
+                    if (logger.isDebugEnabled) logger.debug("{} 오류시 발생 확인 필요.", it.text)
                 }
             }
             index++
@@ -142,13 +154,22 @@ open class BlockMessage(
             .getOrNull(0)
 
         val method: PsiMethod? = psiCall?.resolveMethod()
-        if (method != null) {
-            //클래스 내부 메소드 호출시.
-            subMessages.add(MethodBlockMessage(callee, callee, method, comment))
-        } else {
-            //외부 클래스 메소드 호출시
+
+        //외부 클래스 메소드 호출시
+        if (method == null) {
             addMessage((psiCall as PsiMethodCallExpression), comment)
+            return
         }
+
+        //클래스 메소드는 처리 제외.
+        if (method.hasModifierProperty("static")) {
+            if (logger.isDebugEnabled) logger.debug("${method.name} 제외 처리")
+            return
+        }
+
+        //클래스 내부 메소드 호출시.
+        addSubMessage(MethodBlockMessage(callee, callee, method, comment))
+
     }
 
 
@@ -160,18 +181,26 @@ open class BlockMessage(
                 addMessage(temp, comment)
                 return
             }
+        } else if (temp is PsiField) {
+            val psiClass: PsiClass? = temp.containingClass
+            if (psiClass != null) {
+                //todo [진행중] 인스턴스 메소드 처리 로직.
+                val parentPsiElement = psiElement.parent
+                addSubMessage(
+                    CallMessage(
+                        callee,
+                        JavaParticipant(psiClass),
+                        comment,
+                        parentPsiElement.text,
+                        MessageArrowType.SolidLineWithArrowhead
+                    )
+                )
+                return
+            }
+
         }
 
-        //static 메소드 호출시 들어오는지 확인 필요.
-        val parentPsiElement = psiElement.parent
-        subMessages.add(
-            CallMessage(
-                callee,
-                callee,
-                comment,
-                parentPsiElement.text,
-                MessageArrowType.SolidLineWithArrowhead
-            )
-        )
+        if (logger.isDebugEnabled) logger.debug("{} 오류시 발생 확인 필요.", temp)
+
     }
 }

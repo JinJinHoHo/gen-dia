@@ -34,15 +34,9 @@ public class SimpleBase {
     }
 
     /**
-     * 외부/내부 static method 호출
+     * 외부 method 호출
      */
-    public void testRun3() {
-
-        //+외부 static method
-        TestFun.returnStr();
-
-        //+내부 static method
-        staticTest();
+    public void outerInstanceMethod() {
 
         //+외부 instance method
         this.testFun.testCall();
