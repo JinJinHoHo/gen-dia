@@ -36,8 +36,11 @@ open class BlockMessage(
             val subCode = it.getCodeLine(depth)
             if (subCode.isNotEmpty()) code += subCode
         }
-
         return code
+    }
+
+    override fun toString(): String {
+        return """${caller.name}->${callee.name}"""
     }
 
     private fun addSubMessage(message: Message) {
@@ -90,7 +93,7 @@ open class BlockMessage(
             is PsiDeclarationStatement -> {
                 //todo [예정] 변수에 바로 대입되는 메소드 존재 여부 확인 로직 필요.
                 if (logger.isDebugEnabled) {
-                    logger.debug(psiElement.text)
+                    logger.debug("{} (PsiDeclarationStatement)", psiElement.text)
                     psiElement.declaredElements.forEach {
                         logger.debug((it as PsiLocalVariable).initializer.toString())
                     }
@@ -119,6 +122,10 @@ open class BlockMessage(
         var index = 0
         do {
             when (val it = psiElementList[index]) {
+                is PsiJavaToken -> {
+                    if (logger.isDebugEnabled) logger.debug("제외 처리. {} (addCodeBlockMessage.PsiJavaToken)", it.text)
+                }
+
                 is PsiComment -> {
 
                     if (it.text.indexOf("//+") != -1) {
@@ -138,8 +145,10 @@ open class BlockMessage(
                     if (it.lastChild is PsiBlockStatement) {
                         addCodeBlockMessage((it.lastChild as PsiBlockStatement).codeBlock, comment)
                         continue
+                    } else {
+                        if (logger.isDebugEnabled) logger.debug("{} 확인 필요 라인.(addCodeBlockMessage)", it.text)
                     }
-                    if (logger.isDebugEnabled) logger.debug("{} 오류시 발생 확인 필요.", it.text)
+
                 }
             }
             index++
@@ -167,7 +176,19 @@ open class BlockMessage(
             return
         }
 
+        val psiClass: PsiClass? = method.containingClass
+        if (psiClass != null) {
+            if (callee is ClassParticipant && psiClass != callee.psiClass) {
+                val parserContext = ParserContext.getInstance()
+                addSubMessage(MethodBlockMessage(callee, parserContext.getParticipant(psiClass), method, comment))
+                return
+            }
+            addSubMessage(MethodBlockMessage(callee, callee, method, comment))
+            return
+        }
+
         //클래스 내부 메소드 호출시.
+        if (logger.isDebugEnabled) logger.debug("addExpressionStatementMessage 실행 여부 확인. {}", method)
         addSubMessage(MethodBlockMessage(callee, callee, method, comment))
 
     }
@@ -182,25 +203,30 @@ open class BlockMessage(
                 return
             }
         } else if (temp is PsiField) {
-            val psiClass: PsiClass? = temp.containingClass
-            if (psiClass != null) {
-                //todo [진행중] 인스턴스 메소드 처리 로직.
-                val parentPsiElement = psiElement.parent
-                addSubMessage(
-                    CallMessage(
-                        callee,
-                        JavaParticipant(psiClass),
-                        comment,
-                        parentPsiElement.text,
-                        MessageArrowType.SolidLineWithArrowhead
-                    )
-                )
-                return
-            }
+            val psiType: PsiType = temp.type
+            if (psiType is PsiClassType) {
 
+                val parserContext = ParserContext.getInstance()
+
+                val psiClass: PsiClass? = psiType.resolve()
+                if (psiClass != null) {
+                    addSubMessage(
+                        CallMessage(
+                            callee,
+                            parserContext.getParticipant(psiClass),
+                            comment,
+                            psiElement.parent.text,
+                            MessageArrowType.SolidLineWithArrowhead
+                        )
+                    )
+                    return
+                }
+            }
+            if (logger.isDebugEnabled) logger.debug("{} 확인 필요 라인.(addReferenceExpressionMessage)", psiType)
+            return
         }
 
-        if (logger.isDebugEnabled) logger.debug("{} 오류시 발생 확인 필요.", temp)
+        if (logger.isDebugEnabled) logger.debug("{} 확인 필요 라인.(addReferenceExpressionMessage)", temp)
 
     }
 }

@@ -34,4 +34,8 @@ class IfElseConditionalMultipleMessage(
         return ConditionalMarkType.Alt
     }
 
+    override fun toString(): String {
+        return """${caller.name}->${callee.name}:${name}"""
+    }
+
 }

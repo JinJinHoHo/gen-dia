@@ -2,9 +2,12 @@
 package testData.sequence;
 
 
+import testData.test.SimpleClzz;
+
 public class SimpleBase {
 
     private TestFun testFun;
+    private SimpleClzz simpleClzz;
 
     public SimpleBase() {
         this.testFun = new TestFun();
@@ -40,6 +43,9 @@ public class SimpleBase {
 
         //+외부 instance method
         this.testFun.testCall();
+
+        //+타 패키지 instance method
+        this.simpleClzz.testReturnCall();
 
         //+외부 instance return method
         Integer i = this.testFun.testReturnCall();

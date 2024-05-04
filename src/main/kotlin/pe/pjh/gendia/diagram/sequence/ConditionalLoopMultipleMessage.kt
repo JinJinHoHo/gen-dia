@@ -2,6 +2,7 @@ package pe.pjh.gendia.diagram.sequence
 
 import com.intellij.psi.PsiBlockStatement
 import com.intellij.psi.PsiConditionalLoopStatement
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import pe.pjh.gendia.diagram.TabUtil
 
@@ -17,7 +18,7 @@ class ConditionalLoopMultipleMessage(
     ) : MultipleBlockMessage(caller, callee) {
 
     companion object {
-        val logger = LoggerFactory.getLogger(ConditionalLoopMultipleMessage::class.java)
+        val logger: Logger = LoggerFactory.getLogger(ConditionalLoopMultipleMessage::class.java)
     }
 
     init {
@@ -46,5 +47,9 @@ class ConditionalLoopMultipleMessage(
         if (logger.isDebugEnabled) logger.debug(code)
 
         return code
+    }
+
+    override fun toString(): String {
+        return """${caller.name}->${callee.name}:${comment}"""
     }
 }

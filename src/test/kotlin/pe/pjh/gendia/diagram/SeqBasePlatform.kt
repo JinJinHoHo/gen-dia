@@ -8,8 +8,8 @@ import pe.pjh.gendia.diagram.sequence.SequenceDiagramParser
 //
 open class SeqBasePlatform : BasePlatformTestCase() {
 
-    fun fileAndParamInit(file: String, startPoint: String): SequenceDiagramParser {
-        myFixture.configureByFiles(file)
+    fun fileAndParamInit(startPoint: String, vararg files: String): SequenceDiagramParser {
+        myFixture.configureByFiles(*files)
 
         return SequenceDiagramParser(
             project,

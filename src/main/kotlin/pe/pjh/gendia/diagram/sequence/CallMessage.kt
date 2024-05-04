@@ -19,7 +19,8 @@ open class CallMessage(
     private var expression: String = ""
 
     constructor(
-        caller: Participant, callee: Participant,
+        caller: Participant,
+        callee: Participant,
         comment: String?, expression: String,
         callMsgType: MessageArrowType,
     ) : this(caller, callee, comment, callMsgType) {
@@ -27,15 +28,18 @@ open class CallMessage(
     }
 
     override fun getCode(): String {
-        var code = ""
-        if (expression.isEmpty()) {
-            code = """${caller.name}${callMsgType.expression}${callee.name}:${comment}"""
+        val code = if (expression.isEmpty()) {
+            """${caller.name}${callMsgType.expression}${callee.name}:${comment}"""
         } else {
-            code = """${caller.name}${callMsgType.expression}${callee.name}:${comment}[${expression}]"""
+            """${caller.name}${callMsgType.expression}${callee.name}:${comment}[${expression}]"""
         }
 
         if (logger.isDebugEnabled) logger.debug(code)
 
         return code
+    }
+
+    override fun toString(): String {
+        return """${caller.name}${callMsgType.expression}${callee.name}:${comment}"""
     }
 }

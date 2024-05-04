@@ -2,17 +2,22 @@ package pe.pjh.gendia.diagram
 
 import com.intellij.psi.PsiJavaFile
 import junit.framework.TestCase
+import org.slf4j.LoggerFactory
 
 
 //
 class SequenceDiagramParserBaseTest : SeqBasePlatform() {
 
+    companion object {
+        private val logger = LoggerFactory.getLogger(SequenceDiagramParserBaseTest::class.java)
+    }
 
     fun testCollection() {
 
         val sd = fileAndParamInit(
-            "testData/sequence/SimpleBase.java",
-            "testData.sequence.SimpleBase.testRun"
+            "testData.sequence.SimpleBase.testRun",
+            "testData/sequence/SimpleBase.java"
+
         )
 
         sd.collection()
@@ -31,8 +36,8 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
     fun testAnalysis() {
 
         val sd = fileAndParamInit(
-            "testData/sequence/SimpleBase.java",
-            "testData.sequence.SimpleBase.testRun"
+            "testData.sequence.SimpleBase.testRun",
+            "testData/sequence/SimpleBase.java"
         )
 
         sd.collection()
@@ -43,8 +48,8 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
 
 
         val sd = fileAndParamInit(
-            "testData/sequence/SimpleBase.java",
-            "testData.sequence.SimpleBase.testRun"
+            "testData.sequence.SimpleBase.testRun",
+            "testData/sequence/SimpleBase.java"
         )
 
         sd.collection()
@@ -68,15 +73,15 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
     fun testStaticMethod() {
 
         val sd = fileAndParamInit(
-            "testData/sequence/SimpleBase.java",
-            "testData.sequence.SimpleBase.staticMethod"
+            "testData.sequence.SimpleBase.staticMethod",
+            "testData/sequence/SimpleBase.java"
         )
 
         sd.collection()
         sd.analysis()
 
         val code = sd.generate()
-        println(code)
+        logger.info(code)
         TestCase.assertEquals(
             """
           	autonumber
@@ -96,15 +101,15 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
 
 
         val sd = fileAndParamInit(
-            "testData/sequence/SimpleBase.java",
-            "testData.sequence.SimpleBase.outerInstanceMethod"
+            "testData.sequence.SimpleBase.outerInstanceMethod",
+            "testData/sequence/SimpleBase.java","testData/sequence/TestFun.java","testData/test/SimpleClzz.java"
         )
 
         sd.collection()
         sd.analysis()
 
         val code = sd.generate()
-        println(code)
+        logger.info(code)
         TestCase.assertEquals(
             """
             autonumber
@@ -125,8 +130,8 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
 
     fun testGenerate4() {
         val sd = fileAndParamInit(
-            "testData/sequence/SimpleReturn.java",
-            "testData.sequence.SimpleReturn.testRun"
+            "testData.sequence.SimpleReturn.testRun",
+            "testData/sequence/SimpleReturn.java"
         )
 
         sd.collection()

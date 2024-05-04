@@ -10,4 +10,6 @@ interface Message {
         return TabUtil.textLine(depth, getCode())
     }
 
+    override fun toString(): String
+
 }

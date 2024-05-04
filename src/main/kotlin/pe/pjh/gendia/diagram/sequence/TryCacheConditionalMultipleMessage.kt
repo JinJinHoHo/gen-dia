@@ -26,4 +26,8 @@ class TryCacheConditionalMultipleMessage(
         return ConditionalMarkType.Critical
     }
 
+    override fun toString(): String {
+        return """${caller.name}->${callee.name}:${name}"""
+    }
+
 }
