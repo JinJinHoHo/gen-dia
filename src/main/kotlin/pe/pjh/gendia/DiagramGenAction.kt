@@ -60,8 +60,9 @@ class DiagramGenAction : IntentionAction {
             }
         }
         SequenceDiagramConfig(
-            sp, uMLType,
+            uMLType,
             diagramType,
+            sp
         )
     }
 

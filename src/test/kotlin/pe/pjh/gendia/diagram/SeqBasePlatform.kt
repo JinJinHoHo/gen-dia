@@ -14,9 +14,9 @@ open class SeqBasePlatform : BasePlatformTestCase() {
         return SequenceDiagramParser(
             project,
             SequenceDiagramConfig(
-                startPoint,
                 UMLType.Mermaid,
                 DiagramType.SequenceDiagram,
+                startPoint,
             )
         )
     }

@@ -23,9 +23,7 @@ class MethodBlockMessage(
 
     init {
         val codeBlock: PsiCodeBlock? = psiMethod.body
-        if (codeBlock != null) {
-            addMessage(codeBlock, null)
-        }
+        if (codeBlock != null) addMessage(codeBlock, null)
 
         //반환 가능 한 값이 있을 경우
         val returnType: PsiType? = psiMethod.returnType

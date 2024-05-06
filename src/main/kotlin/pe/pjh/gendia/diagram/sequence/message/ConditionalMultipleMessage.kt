@@ -41,11 +41,10 @@ abstract class ConditionalMultipleMessage(
         val markType = mark()
         var code = TabUtil.textLine(depth, "Note right of ${callee.name}: $name")
 
-
         blockMessages.forEachIndexed { index, it ->
             run {
                 if (it.subMessages.isNotEmpty()) {
-                    val title = if (it is ExpressionBlockMessage) it.getExpression() else name
+                    val title = if (it is ExpressionBlockMessage) it.expression else name
                     code += TabUtil.textLine(
                         depth,
                         if (index == 0) "${markType.mark1} $title" else "${markType.mark2} $title"

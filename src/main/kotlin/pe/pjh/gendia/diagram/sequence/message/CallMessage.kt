@@ -27,7 +27,8 @@ open class CallMessage(
         var code: String? = null
         when (config.messageLabelType) {
             MessageLabelType.METHOD_COMMENT -> {
-                code = """${caller.name}${callMsgType.expression}${callee.name}:${comment} / ${methodName}"""
+                code = """${caller.name}${callMsgType.expression}${callee.name}:${comment}"""
+                if (methodName != null) code += """ / $methodName"""
             }
 
             MessageLabelType.COMMENT -> {
@@ -40,9 +41,8 @@ open class CallMessage(
         }
 
         if (expression != null && expression!!.isNotEmpty()) {
-            code += """[${expression}]"""
+            code += """[$expression]"""
         }
-
 
         if (logger.isDebugEnabled) logger.debug(code)
 

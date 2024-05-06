@@ -102,7 +102,7 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
 
         val sd = fileAndParamInit(
             "testData.sequence.SimpleBase.outerInstanceMethod",
-            "testData/sequence/SimpleBase.java","testData/sequence/TestFun.java","testData/test/SimpleClzz.java"
+            "testData/sequence/SimpleBase.java", "testData/sequence/TestFun.java", "testData/test/SimpleClzz.java"
         )
 
         sd.collection()
@@ -112,17 +112,17 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
         logger.info(code)
         TestCase.assertEquals(
             """
-            autonumber
-        
-            actor User
-        
-            participant User
-            participant sequence.SimpleBase
-        
-            User->>sequence.SimpleBase:testRun2
-            sequence.SimpleBase->>sequence.SimpleBase:System.out.println
-            sequence.SimpleBase->>sequence.SimpleBase:TestFun.returnStr
-            sequence.SimpleBase->>sequence.SimpleBase:staticTest
+ 	autonumber
+
+	actor  User
+	participant testData.sequence.SimpleBase
+	participant testData.sequence.TestFun
+	participant testData.test.SimpleClzz
+
+	User->>testData.sequence.SimpleBase:Start / outerInstanceMethod
+	testData.sequence.SimpleBase->>testData.sequence.TestFun:외부 instance method / testCall
+	testData.sequence.SimpleBase->>testData.test.SimpleClzz:타 패키지 instance method / testReturnCall
+	testData.test.SimpleClzz-->>testData.sequence.SimpleBase:Integer
             """.replace(Regex("([\\t\\s]+)"), ""),
             code.replace(Regex("([\\t\\s]+)"), "")
         )

@@ -12,14 +12,10 @@ class ExpressionBlockMessage(
     callee: BaseParticipant,
     psiElement: PsiElement,
     comment: String?,
-    private val expression: String?
+    val expression: String?,
 ) : BlockMessage(caller, callee, psiElement, comment) {
 
-    fun getExpression(): String? {
-        return expression
-    }
-
     override fun getCode(config: SequenceDiagramConfig): String {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException("아직 구현되지 않음")
     }
 }

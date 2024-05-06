@@ -46,14 +46,28 @@ class SequenceDiagramParser(
 
     override fun analysis() {
         val actor = parserContext.getParticipant(config.actorName)
+        config.web
 
         startPointPsiMethods.forEach {
             val psiClass: PsiClass = it.containingClass ?: return
-            messageModels.add(
-                MethodBlockMessage(
-                    actor, parserContext.getParticipant(psiClass), it, null
+            if (config.web) {
+                messageModels.add(
+                    MethodBlockMessage(
+                        actor, parserContext.getParticipant(psiClass), it, "Request"
+                    )
                 )
-            )
+//                messageModels.add(
+//                    MethodBlockMessage(
+//                        parserContext.getParticipant(psiClass), actor, null, "Response"
+//                    )
+//                )
+            } else {
+                messageModels.add(
+                    MethodBlockMessage(
+                        actor, parserContext.getParticipant(psiClass), it, "Call"
+                    )
+                )
+            }
         }
     }
 
