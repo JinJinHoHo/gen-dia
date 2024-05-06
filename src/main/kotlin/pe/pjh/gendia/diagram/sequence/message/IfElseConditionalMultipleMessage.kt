@@ -1,11 +1,13 @@
-package pe.pjh.gendia.diagram.sequence
+package pe.pjh.gendia.diagram.sequence.message
 
 import com.intellij.psi.PsiExpression
 import com.intellij.psi.PsiIfStatement
+import pe.pjh.gendia.diagram.sequence.ConditionalMarkType
+import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
 
 class IfElseConditionalMultipleMessage(
-    override val caller: Participant,
-    override val callee: Participant,
+    override val caller: BaseParticipant,
+    override val callee: BaseParticipant,
     override val name: String?,
     psiIfStatement: PsiIfStatement,
 ) : ConditionalMultipleMessage(caller, callee, name) {
@@ -27,7 +29,6 @@ class IfElseConditionalMultipleMessage(
                 null
             }
         } while (tempPsiIfStatement != null)
-
     }
 
     override fun mark(): ConditionalMarkType {

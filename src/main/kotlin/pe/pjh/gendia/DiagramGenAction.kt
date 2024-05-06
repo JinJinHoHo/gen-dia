@@ -12,7 +12,7 @@ import com.intellij.psi.util.PsiUtilBase
 import com.intellij.util.IncorrectOperationException
 import org.intellij.plugins.markdown.lang.MarkdownLanguage
 import pe.pjh.gendia.diagram.*
-import pe.pjh.gendia.diagram.sequence.SequenceDiagramParam
+import pe.pjh.gendia.diagram.sequence.SequenceDiagramConfig
 import java.util.*
 
 class DiagramGenAction : IntentionAction {
@@ -59,14 +59,10 @@ class DiagramGenAction : IntentionAction {
                 sp = keyValue[1].trim()
             }
         }
-
-        DiagramGenInfo(
-            uMLType,
+        SequenceDiagramConfig(
+            sp, uMLType,
             diagramType,
-            SequenceDiagramParam(sp)
         )
-
-
     }
 
     override fun startInWriteAction(): Boolean {

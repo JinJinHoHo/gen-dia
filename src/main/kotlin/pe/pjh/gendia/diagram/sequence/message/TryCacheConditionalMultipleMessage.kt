@@ -1,10 +1,13 @@
-package pe.pjh.gendia.diagram.sequence
+package pe.pjh.gendia.diagram.sequence.message
 
 import com.intellij.psi.PsiTryStatement
+import pe.pjh.gendia.diagram.sequence.ConditionalMarkType
+import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
+import kotlin.collections.forEach
 
 class TryCacheConditionalMultipleMessage(
-    override val caller: Participant,
-    override val callee: Participant,
+    override val caller: BaseParticipant,
+    override val callee: BaseParticipant,
     override val name: String?,
     psiTryStatement: PsiTryStatement,
 ) : ConditionalMultipleMessage(caller, callee, name) {

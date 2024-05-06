@@ -1,7 +1,7 @@
 package pe.pjh.gendia.diagram
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import pe.pjh.gendia.diagram.sequence.SequenceDiagramParam
+import pe.pjh.gendia.diagram.sequence.SequenceDiagramConfig
 import pe.pjh.gendia.diagram.sequence.SequenceDiagramParser
 
 
@@ -13,10 +13,10 @@ open class SeqBasePlatform : BasePlatformTestCase() {
 
         return SequenceDiagramParser(
             project,
-            DiagramGenInfo(
+            SequenceDiagramConfig(
+                startPoint,
                 UMLType.Mermaid,
                 DiagramType.SequenceDiagram,
-                SequenceDiagramParam(startPoint)
             )
         )
     }

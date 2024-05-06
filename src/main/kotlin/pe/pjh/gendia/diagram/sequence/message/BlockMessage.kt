@@ -1,15 +1,29 @@
-package pe.pjh.gendia.diagram.sequence
+package pe.pjh.gendia.diagram.sequence.message
 
 import com.intellij.psi.*
 import org.slf4j.LoggerFactory
 import pe.pjh.gendia.diagram.UndefindOperationException
+import pe.pjh.gendia.diagram.sequence.MessageArrowType
+import pe.pjh.gendia.diagram.sequence.ParserContext
+import pe.pjh.gendia.diagram.sequence.SequenceDiagramConfig
+import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
+import pe.pjh.gendia.diagram.sequence.participant.ClassParticipant
+import kotlin.collections.filter
+import kotlin.collections.filterIsInstance
+import kotlin.collections.forEach
+import kotlin.collections.getOrNull
+import kotlin.jvm.java
+import kotlin.text.indexOf
+import kotlin.text.isNotEmpty
+import kotlin.text.substringAfterLast
+import kotlin.toString
 
 /**
  * 메시지 그룹(하위로 n개의 메시지를 갖고 있음)
  */
 open class BlockMessage(
-    private val caller: Participant,
-    private val callee: Participant,
+    private val caller: BaseParticipant,
+    private val callee: BaseParticipant,
 ) : Message {
 
     companion object {
@@ -19,21 +33,21 @@ open class BlockMessage(
     val subMessages: MutableList<Message> = mutableListOf()
 
     constructor(
-        caller: Participant,
-        callee: Participant,
+        caller: BaseParticipant,
+        callee: BaseParticipant,
         psiElement: PsiElement, comment: String?,
     ) : this(caller, callee) {
         addMessage(psiElement, comment)
     }
 
-    override fun getCode(): String {
+    override fun getCode(config: SequenceDiagramConfig): String {
         TODO("Not yet implemented")
     }
 
-    override fun getCodeLine(depth: Int): String {
+    override fun getCodeLine(depth: Int, config: SequenceDiagramConfig): String {
         var code = ""
         subMessages.forEach {
-            val subCode = it.getCodeLine(depth)
+            val subCode = it.getCodeLine(depth, config)
             if (subCode.isNotEmpty()) code += subCode
         }
         return code
@@ -49,7 +63,6 @@ open class BlockMessage(
         subMessages.add(message)
     }
 
-
     fun addMessage(psiElement: PsiElement, comment: String?) {
 
         when (psiElement) {
@@ -58,32 +71,40 @@ open class BlockMessage(
 
             is PsiBlockStatement -> addCodeBlockMessage(psiElement.codeBlock, comment)
 
-            is PsiMethod -> {
-                val codeBlock = psiElement.body
-                if (codeBlock != null) addCodeBlockMessage(codeBlock, comment)
-            }
-
-            is PsiConditionalLoopStatement ->
-                addSubMessage(ConditionalLoopMultipleMessage(caller, callee, psiElement, comment))
-
-            is PsiIfStatement -> addSubMessage(IfElseConditionalMultipleMessage(caller, callee, comment, psiElement))
-
-            is PsiTryStatement -> addSubMessage(
-                TryCacheConditionalMultipleMessage(
+            is PsiConditionalLoopStatement -> addSubMessage(
+                ConditionalLoopMultipleMessage(
                     caller,
                     callee,
-                    comment,
-                    psiElement
+                    psiElement,
+                    comment
                 )
             )
 
+            is PsiIfStatement -> addSubMessage(IfElseConditionalMultipleMessage(caller, callee, comment, psiElement))
+
+            is PsiTryStatement -> addSubMessage(TryCacheConditionalMultipleMessage(caller, callee, comment, psiElement))
+
             is PsiMethodCallExpression -> {
                 val psiMethod: PsiMethod? = psiElement.resolveMethod()
-                if (psiMethod != null) {
-                    addMessage(psiMethod, comment)
-                } else {
+                if (psiMethod == null) {
+                    logger.debug("{} (addMessage.PsiMethodCallExpression.methodExpression)", psiElement.text)
                     addMessage(psiElement.methodExpression, comment)
+                    return
                 }
+
+                val parserContext = ParserContext.getInstance()
+                var psiClass: PsiClass? = psiMethod.containingClass
+                if (psiClass == null) throw UndefindOperationException("Not Statement $psiElement")
+
+                addSubMessage(
+                    MethodBlockMessage(
+                        callee,
+                        parserContext.getParticipant(psiClass),
+                        psiMethod,
+                        comment
+                    )
+                )
+                return
             }
 
             is PsiReferenceExpression -> addReferenceExpressionMessage(psiElement, comment)
@@ -98,6 +119,13 @@ open class BlockMessage(
                         logger.debug((it as PsiLocalVariable).initializer.toString())
                     }
                 }
+            }
+
+            is PsiMethod -> {
+                //addMessage를 PsiMethod 호출 하는 경우는 없어야 함.(MethodBlockMessage 통해서 처리 되도록 변경 필요)
+                logger.debug("{} (addMessage.PsiMethod) 호출 경우 확인.", psiElement.text)
+                val codeBlock: PsiCodeBlock? = psiElement.body
+                if (codeBlock != null) addCodeBlockMessage(codeBlock, comment)
             }
 
             //실행 코드가 코멘트일 경우 처리 제외.
@@ -148,7 +176,6 @@ open class BlockMessage(
                     } else {
                         if (logger.isDebugEnabled) logger.debug("{} 확인 필요 라인.(addCodeBlockMessage)", it.text)
                     }
-
                 }
             }
             index++
@@ -193,40 +220,50 @@ open class BlockMessage(
 
     }
 
-
     private fun addReferenceExpressionMessage(psiElement: PsiReferenceExpression, comment: String?) {
-        var temp = psiElement.resolve()
+        var temp: PsiElement? = psiElement.resolve()
         if (temp == null) {
             temp = psiElement.qualifierExpression
             if (temp != null) {
                 addMessage(temp, comment)
                 return
             }
-        } else if (temp is PsiField) {
-            val psiType: PsiType = temp.type
-            if (psiType is PsiClassType) {
+            if (logger.isDebugEnabled) logger.debug(
+                "{} 확인 필요 라인.(addReferenceExpressionMessage.qualifierExpression)",
+                temp
+            )
+            return
+        }
+        if (temp !is PsiField) {
+            if (logger.isDebugEnabled) logger.debug("{} 테스트시 캐시 확인 필요.(addReferenceExpressionMessage.PsiField)", temp)
+            return
+        }
 
-                val parserContext = ParserContext.getInstance()
-
-                val psiClass: PsiClass? = psiType.resolve()
-                if (psiClass != null) {
-                    addSubMessage(
-                        CallMessage(
-                            callee,
-                            parserContext.getParticipant(psiClass),
-                            comment,
-                            psiElement.parent.text,
-                            MessageArrowType.SolidLineWithArrowhead
-                        )
-                    )
-                    return
-                }
-            }
+        val psiType: PsiType = temp.type
+        if (psiType !is PsiClassType) {
             if (logger.isDebugEnabled) logger.debug("{} 확인 필요 라인.(addReferenceExpressionMessage)", psiType)
             return
         }
 
-        if (logger.isDebugEnabled) logger.debug("{} 확인 필요 라인.(addReferenceExpressionMessage)", temp)
+        val parserContext = ParserContext.getInstance()
+        val psiClass: PsiClass? = psiType.resolve()
+        if (psiClass == null) {
+            if (logger.isDebugEnabled) logger.debug(
+                "{} 테스트시 캐시 확인 필요.(addReferenceExpressionMessage.PsiClass)",
+                psiType
+            )
+            return
+        }
 
+        addSubMessage(
+            CallMessage(
+                callee,
+                parserContext.getParticipant(psiClass),
+                null,
+                comment,
+                psiElement.parent.text,
+                MessageArrowType.SolidLineWithArrowhead
+            )
+        )
     }
 }

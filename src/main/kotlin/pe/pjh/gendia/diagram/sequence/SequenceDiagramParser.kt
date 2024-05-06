@@ -3,26 +3,25 @@ package pe.pjh.gendia.diagram.sequence
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiMethod
-import pe.pjh.gendia.diagram.DiagramGenInfo
 import pe.pjh.gendia.diagram.DiagramParsingProcess
 import pe.pjh.gendia.diagram.TabUtil
+import pe.pjh.gendia.diagram.sequence.message.Message
+import pe.pjh.gendia.diagram.sequence.message.MethodBlockMessage
 
 class SequenceDiagramParser(
-    project: Project, diagramGenInfo: DiagramGenInfo,
+    project: Project,
+    val config: SequenceDiagramConfig,
 ) : DiagramParsingProcess {
 
-    private var parserContext = ParserContext.getInstanceAndInit(project)
-
-    private val diagramConfig: SequenceDiagramParam = diagramGenInfo.diagramParam
+    private var parserContext = ParserContext.getInstanceAndInit(project, config)
 
     private val messageModels = mutableListOf<Message>()
 
     var startPointPsiMethods: MutableList<PsiMethod> = mutableListOf()
 
-
     override fun collection() {
 
-        diagramConfig.startPoint
+        config.startPoint
             .split(",")
             .forEach {
 
@@ -46,7 +45,7 @@ class SequenceDiagramParser(
     }
 
     override fun analysis() {
-        val actor = parserContext.getParticipant(diagramConfig.actorName)
+        val actor = parserContext.getParticipant(config.actorName)
 
         startPointPsiMethods.forEach {
             val psiClass: PsiClass = it.containingClass ?: return
@@ -62,19 +61,20 @@ class SequenceDiagramParser(
         var code = ""
 
         //기본 설정 영역
-        if (diagramConfig.autonumber) {
+        if (config.autonumber) {
             code += TabUtil.textLine(1, "autonumber")
             code += "\n"
         }
 
         //Participant/Actor 영역
-        parserContext.participantMap.forEach { (t, u) -> code += TabUtil.textLine(1, u.getMessage()) }
+        code += parserContext.generateMessageCode()
         code += "\n"
 
+
         //Messages 영역
-        messageModels.forEach {
-            code += it.getCodeLine(1)
-        }
+        code += messageModels.map {
+            it.getCodeLine(1, config)
+        }.joinToString("\n")
         return code
     }
 }

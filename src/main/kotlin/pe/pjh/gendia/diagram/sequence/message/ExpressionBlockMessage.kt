@@ -1,13 +1,15 @@
-package pe.pjh.gendia.diagram.sequence
+package pe.pjh.gendia.diagram.sequence.message
 
 import com.intellij.psi.PsiElement
+import pe.pjh.gendia.diagram.sequence.SequenceDiagramConfig
+import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
 
 /**
  * 메시지 그룹(하위로 n개의 메시지를 갖고 있음)
  */
 class ExpressionBlockMessage(
-    caller: Participant,
-    callee: Participant,
+    caller: BaseParticipant,
+    callee: BaseParticipant,
     psiElement: PsiElement,
     comment: String?,
     private val expression: String?
@@ -15,5 +17,9 @@ class ExpressionBlockMessage(
 
     fun getExpression(): String? {
         return expression
+    }
+
+    override fun getCode(config: SequenceDiagramConfig): String {
+        TODO("Not yet implemented")
     }
 }
