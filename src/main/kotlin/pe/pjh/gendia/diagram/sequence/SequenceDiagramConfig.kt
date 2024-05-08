@@ -12,4 +12,5 @@ data class SequenceDiagramConfig(
     var web: Boolean = false,
     var actorName: String = "User",
     var messageLabelType: MessageLabelType = MessageLabelType.METHOD_COMMENT,
+    var participantLabelType: ParticipantLabelType = ParticipantLabelType.FULL_QUALIFIED_CLASS_NAME,
 ) : DiagramGenConfig(umlType, diagramType)

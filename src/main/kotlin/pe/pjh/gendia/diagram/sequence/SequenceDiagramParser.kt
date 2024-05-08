@@ -5,8 +5,10 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiMethod
 import pe.pjh.gendia.diagram.DiagramParsingProcess
 import pe.pjh.gendia.diagram.TabUtil
+import pe.pjh.gendia.diagram.sequence.message.CallMessage
 import pe.pjh.gendia.diagram.sequence.message.Message
 import pe.pjh.gendia.diagram.sequence.message.MethodBlockMessage
+import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
 
 class SequenceDiagramParser(
     project: Project,
@@ -51,21 +53,21 @@ class SequenceDiagramParser(
         startPointPsiMethods.forEach {
             val psiClass: PsiClass = it.containingClass ?: return
             if (config.web) {
+                val callee: BaseParticipant = parserContext.getParticipant(psiClass)
                 messageModels.add(
                     MethodBlockMessage(
-                        actor, parserContext.getParticipant(psiClass), it, "Request"
+                        actor, callee, it,
+                        "Request", MethodBlockMessage.ReturnFunction {
+                            CallMessage(
+                                callee, actor, null, "Response", null,
+                                MessageArrowType.DottedLineWithArrowhead
+                            )
+                        }
                     )
                 )
-//                messageModels.add(
-//                    MethodBlockMessage(
-//                        parserContext.getParticipant(psiClass), actor, null, "Response"
-//                    )
-//                )
             } else {
                 messageModels.add(
-                    MethodBlockMessage(
-                        actor, parserContext.getParticipant(psiClass), it, "Call"
-                    )
+                    MethodBlockMessage(actor, parserContext.getParticipant(psiClass), it, "Call", null)
                 )
             }
         }

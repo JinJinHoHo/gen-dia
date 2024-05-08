@@ -97,6 +97,9 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
         )
     }
 
+    /**
+     * 타 객체 메소스 호출하는 메소드 테스트
+     */
     fun testOuterInstanceMethod() {
 
 
@@ -112,26 +115,29 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
         logger.info(code)
         TestCase.assertEquals(
             """
- 	autonumber
+	autonumber
 
 	actor  User
 	participant testData.sequence.SimpleBase
 	participant testData.sequence.TestFun
 	participant testData.test.SimpleClzz
 
-	User->>testData.sequence.SimpleBase:Start / outerInstanceMethod
-	testData.sequence.SimpleBase->>testData.sequence.TestFun:외부 instance method / testCall
-	testData.sequence.SimpleBase->>testData.test.SimpleClzz:타 패키지 instance method / testReturnCall
+	User->>testData.sequence.SimpleBase:Call/outerInstanceMethod
+	testData.sequence.SimpleBase->>testData.sequence.TestFun:외부 instance method/testCall
+	testData.sequence.SimpleBase->>testData.test.SimpleClzz:타 패키지 instance method/testReturnCall
 	testData.test.SimpleClzz-->>testData.sequence.SimpleBase:Integer
             """.replace(Regex("([\\t\\s]+)"), ""),
             code.replace(Regex("([\\t\\s]+)"), "")
         )
     }
 
-    fun testGenerate4() {
+    /**
+     * 인라인 변수로 선언된 메소드 주석 테스트
+     */
+    fun testInlineVariable() {
         val sd = fileAndParamInit(
-            "testData.sequence.SimpleReturn.testRun",
-            "testData/sequence/SimpleReturn.java"
+            "testData.sequence.SimpleBase.testInlineVariable",
+            "testData/sequence/SimpleBase.java"
         )
 
         sd.collection()

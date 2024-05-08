@@ -4,7 +4,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.search.GlobalSearchScope
-import pe.pjh.gendia.diagram.DiagramGenConfig
 import pe.pjh.gendia.diagram.TabUtil
 import pe.pjh.gendia.diagram.sequence.participant.ActorParticipant
 import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
@@ -12,12 +11,12 @@ import pe.pjh.gendia.diagram.sequence.participant.ClassParticipant
 
 class ParserContext private constructor(
     private val project: Project,
-    private var config: DiagramGenConfig,
+    private var config: SequenceDiagramConfig,
 ) : AutoCloseable {
     companion object {
         private var instance: ParserContext? = null
 
-        fun getInstanceAndInit(project: Project, config: DiagramGenConfig): ParserContext {
+        fun getInstanceAndInit(project: Project, config: SequenceDiagramConfig): ParserContext {
             if (instance == null) {
                 instance = ParserContext(project, config)
             }
@@ -32,7 +31,6 @@ class ParserContext private constructor(
         }
     }
 
-    //    private val psiManager: PsiManager = PsiManager.getInstance(project)
     private var javaPsiFacade: JavaPsiFacade = JavaPsiFacade.getInstance(project)
     val baseParticipantMap: MutableMap<String, BaseParticipant> = mutableMapOf()
 
@@ -43,8 +41,14 @@ class ParserContext private constructor(
     }
 
     fun getParticipant(psiClass: PsiClass): BaseParticipant {
+
         return baseParticipantMap.getOrPut(psiClass.qualifiedName.toString()) {
-            ClassParticipant(psiClass)
+
+            val aliasName = if (config.participantLabelType == ParticipantLabelType.CLASS_NAME)
+                psiClass.name.toString()
+            else null
+
+            ClassParticipant(psiClass, aliasName)
         }
     }
 
@@ -55,7 +59,9 @@ class ParserContext private constructor(
     }
 
     fun generateMessageCode(): String {
-        return baseParticipantMap.map { (_, u) -> TabUtil.textLine(1, u.getMessage()) }.joinToString("")
+        return baseParticipantMap
+            .map { (_, u) -> TabUtil.textLine(1, u.getMessage()) }
+            .joinToString("")
     }
 
     override fun close() {

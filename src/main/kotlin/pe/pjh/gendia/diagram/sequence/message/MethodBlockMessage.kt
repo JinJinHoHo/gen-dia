@@ -13,12 +13,13 @@ class MethodBlockMessage(
     callee: BaseParticipant,
     psiMethod: PsiMethod,
     comment: String?,
+    returnFunction: ReturnFunction?,
 ) : BlockMessage(caller, callee) {
 
     //노출 명칭 처리.
-    private val callMessage: CallMessage =
+    private val callMessage: Message =
         CallMessage(caller, callee, psiMethod.name, comment, null, MessageArrowType.SolidLineWithArrowhead)
-    private var backMessage: CallMessage? = null
+    private var backMessage: Message? = null
 
 
     init {
@@ -27,15 +28,21 @@ class MethodBlockMessage(
 
         //반환 가능 한 값이 있을 경우
         val returnType: PsiType? = psiMethod.returnType
-        if (returnType != null && "void" != returnType.presentableText) {
-            backMessage = CallMessage(
-                callee, caller,
-                null,
-                returnType.presentableText,
-                null,
-                MessageArrowType.DottedLineWithArrowhead
-            )
+        if (returnFunction == null) {
+            if (returnType != null && "void" != returnType.presentableText) {
+                backMessage = CallMessage(
+                    callee, caller,
+                    null,
+                    returnType.presentableText,
+                    null,
+                    MessageArrowType.DottedLineWithArrowhead
+                )
+            }
+
+        } else {
+            backMessage = returnFunction.invoke(returnType)
         }
+
     }
 
     override fun getCodeLine(depth: Int, config: SequenceDiagramConfig): String {
@@ -44,5 +51,9 @@ class MethodBlockMessage(
         val subCode: String? = backMessage?.getCodeLine(depth, config)
         if (!subCode.isNullOrEmpty()) code += subCode
         return code
+    }
+
+    fun interface ReturnFunction {
+        fun invoke(returnType: PsiType?): Message
     }
 }

@@ -28,7 +28,7 @@ open class CallMessage(
         when (config.messageLabelType) {
             MessageLabelType.METHOD_COMMENT -> {
                 code = """${caller.name}${callMsgType.expression}${callee.name}:${comment}"""
-                if (methodName != null) code += """ / $methodName"""
+                if (methodName != null) code += """/$methodName"""
             }
 
             MessageLabelType.COMMENT -> {

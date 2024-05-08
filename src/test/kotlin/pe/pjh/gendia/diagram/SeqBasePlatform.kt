@@ -8,16 +8,29 @@ import pe.pjh.gendia.diagram.sequence.SequenceDiagramParser
 //
 open class SeqBasePlatform : BasePlatformTestCase() {
 
-    fun fileAndParamInit(startPoint: String, vararg files: String): SequenceDiagramParser {
-        myFixture.configureByFiles(*files)
-
-        return SequenceDiagramParser(
-            project,
+    fun fileAndParamInit(
+        startPoint: String,
+        vararg cacheFiles: String,
+    ): SequenceDiagramParser {
+        return fileAndParamInit(
             SequenceDiagramConfig(
                 UMLType.Mermaid,
                 DiagramType.SequenceDiagram,
                 startPoint,
-            )
+            ), *cacheFiles
+        )
+    }
+
+    fun fileAndParamInit(
+        sequenceDiagramConfig: SequenceDiagramConfig,
+        vararg cacheFiles: String,
+    ): SequenceDiagramParser {
+
+        myFixture.configureByFiles(*cacheFiles)
+
+        return SequenceDiagramParser(
+            project,
+            sequenceDiagramConfig
         )
     }
 

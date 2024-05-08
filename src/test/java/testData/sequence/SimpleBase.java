@@ -52,7 +52,7 @@ public class SimpleBase {
         System.out.println(i);
     }
 
-    public void testRun4() {
+    public void testInlineVariable() {
 
         int a = 0, b = 0, c = 0;
 

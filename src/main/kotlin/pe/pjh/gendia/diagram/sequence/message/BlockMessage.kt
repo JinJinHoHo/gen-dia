@@ -101,7 +101,7 @@ open class BlockMessage(
                         callee,
                         parserContext.getParticipant(psiClass),
                         psiMethod,
-                        comment
+                        comment, null
                     )
                 )
                 return
@@ -207,16 +207,16 @@ open class BlockMessage(
         if (psiClass != null) {
             if (callee is ClassParticipant && psiClass != callee.psiClass) {
                 val parserContext = ParserContext.getInstance()
-                addSubMessage(MethodBlockMessage(callee, parserContext.getParticipant(psiClass), method, comment))
+                addSubMessage(MethodBlockMessage(callee, parserContext.getParticipant(psiClass), method, comment, null))
                 return
             }
-            addSubMessage(MethodBlockMessage(callee, callee, method, comment))
+            addSubMessage(MethodBlockMessage(callee, callee, method, comment, null))
             return
         }
 
         //클래스 내부 메소드 호출시.
         if (logger.isDebugEnabled) logger.debug("addExpressionStatementMessage 실행 여부 확인. {}", method)
-        addSubMessage(MethodBlockMessage(callee, callee, method, comment))
+        addSubMessage(MethodBlockMessage(callee, callee, method, comment, null))
 
     }
 
