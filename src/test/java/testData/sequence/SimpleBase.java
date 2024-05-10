@@ -1,4 +1,3 @@
-
 package testData.sequence;
 
 
@@ -6,7 +5,7 @@ import testData.test.SimpleClzz;
 
 public class SimpleBase {
 
-    private TestFun testFun;
+    private final TestFun testFun;
     private SimpleClzz simpleClzz;
 
     public SimpleBase() {
@@ -52,22 +51,26 @@ public class SimpleBase {
         System.out.println(i);
     }
 
+    /**
+     * 인라인 테스트 케이스 테스트.
+     */
     public void testInlineVariable() {
 
         int a = 0, b = 0, c = 0;
 
-        //+메소드 호출
-        getString();
+        //+단순 호출
+        getStringFortestInlineVariable();
 
-        //+메소드 호출2
-        String test1 = getString();
+        //+문자열 반환된 값 변수 대입
+        String test1 = getStringFortestInlineVariable();
 
-        //+메소드 호출2
-        String test2 = getString();
+        //+ 문자열 반환된 값 변수 대입, 서브 재호출
+        String test2 = getSubCallForTestInlineVariable();
         System.out.println(test1);
 
-
-        String test2_1 = getString(), test2_2 = getString();
+        //+ 2열로 인라인 호출
+        String test2_1 = getStringFortestInlineVariable(),
+                test2_2 = getStringFortestInlineVariable();
     }
 
 
@@ -85,7 +88,13 @@ public class SimpleBase {
         System.out.println("simple:key with spaces1");
     }
 
-    public String getString() {
+    public String getSubCallForTestInlineVariable() {
+        //+Callee SubCall
+        return getStringFortestInlineVariable();
+    }
+
+    public String getStringFortestInlineVariable() {
+        //+Callee String
         return "string";
     }
 }
