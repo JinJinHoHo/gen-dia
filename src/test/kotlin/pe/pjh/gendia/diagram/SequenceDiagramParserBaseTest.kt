@@ -160,5 +160,4 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
             code.trimIndent()
         )
     }
-
 }

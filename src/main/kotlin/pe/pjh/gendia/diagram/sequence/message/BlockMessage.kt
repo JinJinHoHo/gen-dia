@@ -57,7 +57,7 @@ open class BlockMessage(
         return """${caller.name}->${callee.name}"""
     }
 
-    private fun addSubMessage(message: Message) {
+    open fun addSubMessage(message: Message) {
 
         if (logger.isDebugEnabled) logger.debug(message.toString())
         subMessages.add(message)
@@ -67,9 +67,9 @@ open class BlockMessage(
 
         when (psiElement) {
 
-            is PsiCodeBlock -> addCodeBlockMessage(psiElement, comment)
+            is PsiCodeBlock -> addCodeBlock(psiElement, comment)
 
-            is PsiBlockStatement -> addCodeBlockMessage(psiElement.codeBlock, comment)
+            is PsiBlockStatement -> addCodeBlock(psiElement.codeBlock, comment)
 
             is PsiConditionalLoopStatement -> addSubMessage(
                 ConditionalLoopMultipleMessage(
@@ -107,9 +107,9 @@ open class BlockMessage(
                 return
             }
 
-            is PsiReferenceExpression -> addReferenceExpressionMessage(psiElement, comment)
+            is PsiReferenceExpression -> addPsiReferenceExpression(psiElement, comment)
 
-            is PsiExpressionStatement -> addExpressionStatementMessage(psiElement, comment)
+            is PsiExpressionStatement -> addPsiExpressionStatement(psiElement, comment)
 
             is PsiDeclarationStatement -> {
                 //todo [예정] 변수에 바로 대입되는 메소드 존재 여부 확인 로직 필요.
@@ -125,13 +125,17 @@ open class BlockMessage(
                 //addMessage를 PsiMethod 호출 하는 경우는 없어야 함.(MethodBlockMessage 통해서 처리 되도록 변경 필요)
                 logger.debug("{} (addMessage.PsiMethod) 호출 경우 확인.", psiElement.text)
                 val codeBlock: PsiCodeBlock? = psiElement.body
-                if (codeBlock != null) addCodeBlockMessage(codeBlock, comment)
+                if (codeBlock != null) addCodeBlock(codeBlock, comment)
             }
 
             //실행 코드가 코멘트일 경우 처리 제외.
             is PsiComment -> {
                 if (logger.isDebugEnabled) logger.debug("코멘트 무시 ${psiElement.text}")
                 return
+            }
+
+            is PsiReturnStatement -> {
+                addPsiReturnStatement(psiElement, comment)
             }
 
             else -> {
@@ -141,7 +145,11 @@ open class BlockMessage(
         }
     }
 
-    private fun addCodeBlockMessage(psiCodeBlock: PsiCodeBlock, comment: String?) {
+    open fun addPsiReturnStatement(psiReturnStatement: PsiReturnStatement, comment: String?) {
+        logger.debug("BlockMessage {}", psiReturnStatement.toString())
+    }
+
+    open fun addCodeBlock(psiCodeBlock: PsiCodeBlock, comment: String?) {
 
         val psiElementList: List<PsiElement> = psiCodeBlock
             .children
@@ -171,7 +179,7 @@ open class BlockMessage(
                 else -> {
                     //하위에 코드블록이 있을 경우 재귀호출
                     if (it.lastChild is PsiBlockStatement) {
-                        addCodeBlockMessage((it.lastChild as PsiBlockStatement).codeBlock, comment)
+                        addCodeBlock((it.lastChild as PsiBlockStatement).codeBlock, comment)
                         continue
                     } else {
                         if (logger.isDebugEnabled) logger.debug("{} 확인 필요 라인.(addCodeBlockMessage)", it.text)
@@ -183,7 +191,7 @@ open class BlockMessage(
     }
 
 
-    private fun addExpressionStatementMessage(psiElement: PsiExpressionStatement, comment: String?) {
+    open fun addPsiExpressionStatement(psiElement: PsiExpressionStatement, comment: String?) {
         //psiCall 추출
         val psiCall: PsiCall? = psiElement.children
             .filterIsInstance<PsiCall>()
@@ -215,12 +223,12 @@ open class BlockMessage(
         }
 
         //클래스 내부 메소드 호출시.
-        if (logger.isDebugEnabled) logger.debug("addExpressionStatementMessage 실행 여부 확인. {}", method)
+        if (logger.isDebugEnabled) logger.debug("addPsiExpressionStatement 실행 여부 확인. {}", method)
         addSubMessage(MethodBlockMessage(callee, callee, method, comment, null))
 
     }
 
-    private fun addReferenceExpressionMessage(psiElement: PsiReferenceExpression, comment: String?) {
+    open fun addPsiReferenceExpression(psiElement: PsiReferenceExpression, comment: String?) {
         var temp: PsiElement? = psiElement.resolve()
         if (temp == null) {
             temp = psiElement.qualifierExpression
@@ -228,20 +236,19 @@ open class BlockMessage(
                 addMessage(temp, comment)
                 return
             }
-            if (logger.isDebugEnabled) logger.debug(
-                "{} 확인 필요 라인.(addReferenceExpressionMessage.qualifierExpression)",
-                temp
-            )
+            if (logger.isDebugEnabled) {
+                logger.debug("{} 확인 필요 라인.(addPsiReferenceExpression.qualifierExpression)", temp)
+            }
             return
         }
         if (temp !is PsiField) {
-            if (logger.isDebugEnabled) logger.debug("{} 테스트시 캐시 확인 필요.(addReferenceExpressionMessage.PsiField)", temp)
+            if (logger.isDebugEnabled) logger.debug("{} 테스트시 캐시 확인 필요.(addPsiReferenceExpression.PsiField)", temp)
             return
         }
 
         val psiType: PsiType = temp.type
         if (psiType !is PsiClassType) {
-            if (logger.isDebugEnabled) logger.debug("{} 확인 필요 라인.(addReferenceExpressionMessage)", psiType)
+            if (logger.isDebugEnabled) logger.debug("{} 확인 필요 라인.(addPsiReferenceExpression)", psiType)
             return
         }
 
@@ -249,7 +256,7 @@ open class BlockMessage(
         val psiClass: PsiClass? = psiType.resolve()
         if (psiClass == null) {
             if (logger.isDebugEnabled) logger.debug(
-                "{} 테스트시 캐시 확인 필요.(addReferenceExpressionMessage.PsiClass)",
+                "{} 테스트시 캐시 확인 필요.(addPsiReferenceExpression.PsiClass)",
                 psiType
             )
             return

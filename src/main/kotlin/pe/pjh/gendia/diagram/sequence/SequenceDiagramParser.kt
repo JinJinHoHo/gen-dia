@@ -57,7 +57,8 @@ class SequenceDiagramParser(
                 messageModels.add(
                     MethodBlockMessage(
                         actor, callee, it,
-                        "Request", MethodBlockMessage.ReturnFunction {
+                        "Request",
+                        MethodBlockMessage.ReturnFunction {
                             CallMessage(
                                 callee, actor, null, "Response", null,
                                 MessageArrowType.DottedLineWithArrowhead

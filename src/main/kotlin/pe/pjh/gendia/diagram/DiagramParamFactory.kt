@@ -15,7 +15,7 @@ object DiagramParamFactory {
         }
 
         if (DumbService.isDumb(project)) {
-
+            // todo ide 인덱싱 처리 대응 로직 추가. 필요.
         }
 
         diagramParsingProcess.collection()
