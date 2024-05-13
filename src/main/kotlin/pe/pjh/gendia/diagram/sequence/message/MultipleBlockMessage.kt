@@ -1,6 +1,5 @@
 package pe.pjh.gendia.diagram.sequence.message
 
-import pe.pjh.gendia.diagram.sequence.SequenceDiagramConfig
 import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
 
 /**
@@ -8,12 +7,8 @@ import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
  */
 abstract class MultipleBlockMessage(
     open val caller: BaseParticipant,
-    open val callee: BaseParticipant
+    open val callee: BaseParticipant,
 ) : Message {
 
     val blockMessages = mutableListOf<BlockMessage>()
-    override fun getCode(config: SequenceDiagramConfig): String {
-        TODO("Not yet implemented")
-    }
-
 }

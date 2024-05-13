@@ -13,7 +13,7 @@ import kotlin.jvm.java
 /**
  * For, While 조건 루프
  */
-class ConditionalLoopMultipleMessage(
+class LoopMultipleMessage(
     override val caller: BaseParticipant,
     override val callee: BaseParticipant,
     psiConditionalLoopStatement: PsiConditionalLoopStatement,
@@ -22,7 +22,7 @@ class ConditionalLoopMultipleMessage(
     ) : MultipleBlockMessage(caller, callee) {
 
     companion object {
-        val logger: Logger = LoggerFactory.getLogger(ConditionalLoopMultipleMessage::class.java)
+        val logger: Logger = LoggerFactory.getLogger(LoopMultipleMessage::class.java)
     }
 
     init {
@@ -41,7 +41,6 @@ class ConditionalLoopMultipleMessage(
 
         //서브 코드에 노츨되는 항목이 없으면 빈값 반환.
         if (groupMessage.subMessages.isEmpty()) return ""
-
 
         //
         var code = TabUtil.textLine(depth, "loop $comment")

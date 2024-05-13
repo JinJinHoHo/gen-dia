@@ -1,6 +1,7 @@
 package pe.pjh.gendia.diagram.sequence.message
 
 import org.slf4j.LoggerFactory
+import pe.pjh.gendia.diagram.TabUtil
 import pe.pjh.gendia.diagram.sequence.MessageArrowType
 import pe.pjh.gendia.diagram.sequence.MessageLabelType
 import pe.pjh.gendia.diagram.sequence.SequenceDiagramConfig
@@ -23,7 +24,7 @@ open class CallMessage(
         private val logger = LoggerFactory.getLogger(CallMessage::class.java)
     }
 
-    override fun getCode(config: SequenceDiagramConfig): String {
+    fun getCode(config: SequenceDiagramConfig): String {
         var code: String? = null
         when (config.messageLabelType) {
             MessageLabelType.METHOD_COMMENT -> {
@@ -47,6 +48,10 @@ open class CallMessage(
         if (logger.isDebugEnabled) logger.debug(code)
 
         return code
+    }
+
+    override fun getCodeLine(depth: Int, config: SequenceDiagramConfig): String {
+        return TabUtil.textLine(depth, getCode(config))
     }
 
     override fun toString(): String {

@@ -1,7 +1,6 @@
 package pe.pjh.gendia.diagram.sequence.message
 
 import com.intellij.psi.PsiElement
-import pe.pjh.gendia.diagram.sequence.SequenceDiagramConfig
 import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
 
 /**
@@ -13,9 +12,4 @@ class ExpressionBlockMessage(
     psiElement: PsiElement,
     comment: String?,
     val expression: String?,
-) : BlockMessage(caller, callee, psiElement, comment) {
-
-    override fun getCode(config: SequenceDiagramConfig): String {
-        throw UnsupportedOperationException("아직 구현되지 않음")
-    }
-}
+) : BlockMessage(caller, callee, psiElement, comment)

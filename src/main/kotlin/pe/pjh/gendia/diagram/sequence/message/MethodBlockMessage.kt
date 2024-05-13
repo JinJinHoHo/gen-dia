@@ -36,14 +36,17 @@ class MethodBlockMessage(
         //반환 가능 한 값이 있을 경우
         val returnType: PsiType? = psiMethod.returnType
         if (returnFunction == null) {
-            if (returnType != null && "void" != returnType.presentableText) {
-                returnMessage = CallMessage(
-                    callee, caller,
-                    null,
-                    returnType.presentableText,
-                    null,
-                    MessageArrowType.DottedLineWithArrowhead
-                )
+            //요청자와 요청을 받은자가 다른 경우만 처리.(동일한경우 자기자신을 호출하는 불필요한 메시지가 추가됨.
+            if(caller != callee){
+                if (returnType != null && "void" != returnType.presentableText) {
+                    returnMessage = CallMessage(
+                        callee, caller,
+                        null,
+                        returnType.presentableText,
+                        null,
+                        MessageArrowType.DottedLineWithArrowhead
+                    )
+                }
             }
         } else {
             //web - req/res 처리시 사용됨.

@@ -16,7 +16,6 @@ import kotlin.jvm.java
 import kotlin.text.indexOf
 import kotlin.text.isNotEmpty
 import kotlin.text.substringAfterLast
-import kotlin.toString
 
 /**
  * 메시지 그룹(하위로 n개의 메시지를 갖고 있음)
@@ -38,10 +37,6 @@ open class BlockMessage(
         psiElement: PsiElement, comment: String?,
     ) : this(caller, callee) {
         addMessage(psiElement, comment)
-    }
-
-    override fun getCode(config: SequenceDiagramConfig): String {
-        TODO("Not yet implemented")
     }
 
     override fun getCodeLine(depth: Int, config: SequenceDiagramConfig): String {
@@ -72,7 +67,7 @@ open class BlockMessage(
             is PsiBlockStatement -> addCodeBlock(psiElement.codeBlock, comment)
 
             is PsiConditionalLoopStatement -> addSubMessage(
-                ConditionalLoopMultipleMessage(
+                LoopMultipleMessage(
                     caller,
                     callee,
                     psiElement,
@@ -84,46 +79,30 @@ open class BlockMessage(
 
             is PsiTryStatement -> addSubMessage(TryCacheConditionalMultipleMessage(caller, callee, comment, psiElement))
 
-            is PsiMethodCallExpression -> {
-                val psiMethod: PsiMethod? = psiElement.resolveMethod()
-                if (psiMethod == null) {
-                    logger.debug("{} (addMessage.PsiMethodCallExpression.methodExpression)", psiElement.text)
-                    addMessage(psiElement.methodExpression, comment)
-                    return
-                }
-
-                val parserContext = ParserContext.getInstance()
-                var psiClass: PsiClass? = psiMethod.containingClass
-                if (psiClass == null) throw UndefindOperationException("Not Statement $psiElement")
-
-                addSubMessage(
-                    MethodBlockMessage(
-                        callee,
-                        parserContext.getParticipant(psiClass),
-                        psiMethod,
-                        comment, null
-                    )
-                )
-                return
-            }
+            is PsiMethodCallExpression -> addPsiMethodCallExpression(psiElement, comment)
 
             is PsiReferenceExpression -> addPsiReferenceExpression(psiElement, comment)
 
             is PsiExpressionStatement -> addPsiExpressionStatement(psiElement, comment)
 
+            is PsiReturnStatement -> addPsiReturnStatement(psiElement, comment)
+
             is PsiDeclarationStatement -> {
-                //todo [예정] 변수에 바로 대입되는 메소드 존재 여부 확인 로직 필요.
-                if (logger.isDebugEnabled) {
-                    logger.debug("{} (PsiDeclarationStatement)", psiElement.text)
-                    psiElement.declaredElements.forEach {
-                        logger.debug((it as PsiLocalVariable).initializer.toString())
+                psiElement.declaredElements.forEach {
+                    val psiExpression: PsiExpression? = (it as PsiLocalVariable).initializer
+                    if (psiExpression != null) addMessage(psiExpression, comment)
+                    else {
+                        if (logger.isDebugEnabled)
+                            logger.debug("확인 필요 라인. {}", it.toString())
                     }
                 }
             }
 
             is PsiMethod -> {
                 //addMessage를 PsiMethod 호출 하는 경우는 없어야 함.(MethodBlockMessage 통해서 처리 되도록 변경 필요)
-                logger.debug("{} (addMessage.PsiMethod) 호출 경우 확인.", psiElement.text)
+                if (logger.isDebugEnabled)
+                    logger.debug("{} (addMessage.PsiMethod) 호출 경우 확인.", psiElement.text)
+
                 val codeBlock: PsiCodeBlock? = psiElement.body
                 if (codeBlock != null) addCodeBlock(codeBlock, comment)
             }
@@ -134,9 +113,12 @@ open class BlockMessage(
                 return
             }
 
-            is PsiReturnStatement -> {
-                addPsiReturnStatement(psiElement, comment)
+            //원시형 무시 처리 메소드 위주에 플로우 처리 중심으로 구현.
+            is PsiLiteralExpression -> {
+                if (logger.isDebugEnabled) logger.debug("원시형 무시 ${psiElement.text}")
+                return
             }
+
 
             else -> {
                 if (logger.isDebugEnabled) logger.debug(psiElement.text)
@@ -145,8 +127,37 @@ open class BlockMessage(
         }
     }
 
+    open fun addPsiMethodCallExpression(psiElement: PsiMethodCallExpression, comment: String?) {
+        val psiMethod: PsiMethod? = psiElement.resolveMethod()
+        if (psiMethod == null) {
+            logger.debug("{} (addMessage.PsiMethodCallExpression.methodExpression)", psiElement.text)
+            addMessage(psiElement.methodExpression, comment)
+            return
+        }
+
+        var psiClass: PsiClass? = psiMethod.containingClass
+        if (psiClass == null) throw UndefindOperationException("Not Statement $psiElement")
+
+        val parserContext = ParserContext.getInstance()
+        addSubMessage(
+            MethodBlockMessage(
+                callee,
+                parserContext.getParticipant(psiClass),
+                psiMethod,
+                comment, null
+            )
+        )
+        return
+    }
+
     open fun addPsiReturnStatement(psiReturnStatement: PsiReturnStatement, comment: String?) {
-        logger.debug("BlockMessage {}", psiReturnStatement.toString())
+        val psiExpression: PsiExpression? = psiReturnStatement.returnValue;
+        if(psiExpression!=null){
+            addMessage(psiExpression,comment)
+        }else{
+            logger.debug("addPsiReturnStatement {}", psiReturnStatement.text)
+        }
+
     }
 
     open fun addCodeBlock(psiCodeBlock: PsiCodeBlock, comment: String?) {
@@ -157,6 +168,7 @@ open class BlockMessage(
 
         var index = 0
         do {
+            //todo 정리 예정 코드. addMessage 에 병합 하는 방향으로.
             when (val it = psiElementList[index]) {
                 is PsiJavaToken -> {
                     if (logger.isDebugEnabled) logger.debug("제외 처리. {} (addCodeBlockMessage.PsiJavaToken)", it.text)
@@ -236,9 +248,7 @@ open class BlockMessage(
                 addMessage(temp, comment)
                 return
             }
-            if (logger.isDebugEnabled) {
-                logger.debug("{} 확인 필요 라인.(addPsiReferenceExpression.qualifierExpression)", temp)
-            }
+            if (logger.isDebugEnabled) logger.debug("{} 확인 필요 라인.(addPsiReferenceExpression.qualifierExpression)", temp)
             return
         }
         if (temp !is PsiField) {

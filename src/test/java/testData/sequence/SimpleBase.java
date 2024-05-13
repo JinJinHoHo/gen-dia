@@ -63,14 +63,16 @@ public class SimpleBase {
 
         //+문자열 반환된 값 변수 대입
         String test1 = getStringFortestInlineVariable();
+        System.out.println(test1);
 
         //+ 문자열 반환된 값 변수 대입, 서브 재호출
         String test2 = getSubCallForTestInlineVariable();
-        System.out.println(test1);
 
-        //+ 2열로 인라인 호출
+
+        //+ 메소드호출 및 문자열 인라인 변수 선언.
         String test2_1 = getStringFortestInlineVariable(),
-                test2_2 = getStringFortestInlineVariable();
+                test2_2 = getStringFortestInlineVariable(),
+                test2_3 = "변수선언.";
     }
 
 
