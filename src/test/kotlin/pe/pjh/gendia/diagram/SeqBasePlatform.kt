@@ -12,6 +12,7 @@ open class SeqBasePlatform : BasePlatformTestCase() {
         startPoint: String,
         vararg cacheFiles: String,
     ): SequenceDiagramParser {
+
         return fileAndParamInit(
             SequenceDiagramConfig(
                 UMLType.Mermaid,

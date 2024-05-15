@@ -59,11 +59,15 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
         println(code)
         TestCase.assertEquals(
             """
-            autonumber
-            actor User
-            participant User
-            participant sequence.SimpleBase
-            User->>sequence.SimpleBase:testRun
+	autonumber
+
+	actor  User
+	participant testData.sequence.SimpleBase
+	participant testData.sequence.TestFun
+	participant testData.test.SimpleClzz
+
+	User->>testData.sequence.SimpleBase:Call/testRun
+
             """.replace(Regex("([\\t\\s]+)"), ""),
             code.replace(Regex("([\\t\\s]+)"), "")
         )
@@ -84,14 +88,12 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
         logger.info(code)
         TestCase.assertEquals(
             """
-          	autonumber
+    autonumber
 
-	actor User
-
-	participant User
+	actor  User
 	participant testData.sequence.SimpleBase
 
-	User->>testData.sequence.SimpleBase:staticMethod
+	User->>testData.sequence.SimpleBase:Call/staticMethod
             """.replace(Regex("([\\t\\s]+)"), ""),
             code.replace(Regex("([\\t\\s]+)"), "")
         )
@@ -110,9 +112,11 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
 
         sd.collection()
         sd.analysis()
-
         val code = sd.generate()
+
+        logger.info(sd.config.toString())
         logger.info(code)
+
         TestCase.assertEquals(
             """
 	autonumber
@@ -126,6 +130,8 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
 	testData.sequence.SimpleBase->>testData.sequence.TestFun:외부 instance method/testCall
 	testData.sequence.SimpleBase->>testData.test.SimpleClzz:타 패키지 instance method/testReturnCall
 	testData.test.SimpleClzz-->>testData.sequence.SimpleBase:Integer
+	testData.sequence.SimpleBase->>testData.sequence.TestFun:외부 instance return method/testReturnCall
+	testData.sequence.TestFun-->>testData.sequence.SimpleBase:Integer
             """.replace(Regex("([\\t\\s]+)"), ""),
             code.replace(Regex("([\\t\\s]+)"), "")
         )
@@ -147,15 +153,17 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
         println(code)
         TestCase.assertEquals(
             """
-            autonumber
-        
-            actor User
-        
-            participant User
-            participant sequence.SimpleReturn
-        
-            User->>sequence.SimpleReturn:testRun
-            sequence.SimpleReturn-->>User:String
+	autonumber
+
+	actor  User
+	participant testData.sequence.SimpleBase
+
+	User->>testData.sequence.SimpleBase:Call/testInlineVariable
+	testData.sequence.SimpleBase->>testData.sequence.SimpleBase:단순 호출/getStringFortestInlineVariable
+	testData.sequence.SimpleBase->>testData.sequence.SimpleBase:문자열 반환된 값 변수 대입/getStringFortestInlineVariable
+	testData.sequence.SimpleBase->>testData.sequence.SimpleBase: 문자열 반환된 값 변수 대입, 서브 재호출/getSubCallForTestInlineVariable
+	testData.sequence.SimpleBase->>testData.sequence.SimpleBase: 메소드호출 및 문자열 인라인 변수 선언./getStringFortestInlineVariable
+	testData.sequence.SimpleBase->>testData.sequence.SimpleBase: 메소드호출 및 문자열 인라인 변수 선언./getStringFortestInlineVariable
             """.trimIndent(),
             code.trimIndent()
         )

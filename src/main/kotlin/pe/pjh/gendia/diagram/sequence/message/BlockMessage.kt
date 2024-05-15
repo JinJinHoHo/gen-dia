@@ -88,24 +88,18 @@ open class BlockMessage(
             is PsiReturnStatement -> addPsiReturnStatement(psiElement, comment)
 
             is PsiDeclarationStatement -> {
-                psiElement.declaredElements.forEach {
-                    val psiExpression: PsiExpression? = (it as PsiLocalVariable).initializer
-                    if (psiExpression != null) addMessage(psiExpression, comment)
-                    else {
-                        if (logger.isDebugEnabled)
-                            logger.debug("확인 필요 라인. {}", it.toString())
+                psiElement.declaredElements
+                    .map { (it as PsiLocalVariable).initializer }
+                    .forEach {
+                        if (it != null) addMessage(it, comment)
+                        else {
+                            if (logger.isDebugEnabled)
+                                logger.debug("확인 필요 라인. {}", it.toString())
+                        }
                     }
-                }
             }
 
-            is PsiMethod -> {
-                //addMessage를 PsiMethod 호출 하는 경우는 없어야 함.(MethodBlockMessage 통해서 처리 되도록 변경 필요)
-                if (logger.isDebugEnabled)
-                    logger.debug("{} (addMessage.PsiMethod) 호출 경우 확인.", psiElement.text)
-
-                val codeBlock: PsiCodeBlock? = psiElement.body
-                if (codeBlock != null) addCodeBlock(codeBlock, comment)
-            }
+            is PsiMethod -> addPsiMethod(psiElement, comment)
 
             //실행 코드가 코멘트일 경우 처리 제외.
             is PsiComment -> {
@@ -118,7 +112,6 @@ open class BlockMessage(
                 if (logger.isDebugEnabled) logger.debug("원시형 무시 ${psiElement.text}")
                 return
             }
-
 
             else -> {
                 if (logger.isDebugEnabled) logger.debug(psiElement.text)
@@ -135,26 +128,14 @@ open class BlockMessage(
             return
         }
 
-        var psiClass: PsiClass? = psiMethod.containingClass
-        if (psiClass == null) throw UndefindOperationException("Not Statement $psiElement")
-
-        val parserContext = ParserContext.getInstance()
-        addSubMessage(
-            MethodBlockMessage(
-                callee,
-                parserContext.getParticipant(psiClass),
-                psiMethod,
-                comment, null
-            )
-        )
-        return
+        addMessage(psiMethod, comment)
     }
 
     open fun addPsiReturnStatement(psiReturnStatement: PsiReturnStatement, comment: String?) {
         val psiExpression: PsiExpression? = psiReturnStatement.returnValue;
-        if(psiExpression!=null){
-            addMessage(psiExpression,comment)
-        }else{
+        if (psiExpression != null) {
+            addMessage(psiExpression, comment)
+        } else {
             logger.debug("addPsiReturnStatement {}", psiReturnStatement.text)
         }
 
@@ -202,6 +183,46 @@ open class BlockMessage(
         } while (index < psiElementList.size)
     }
 
+    open fun addPsiMethod(psiElement: PsiMethod, comment: String?) {
+        //addMessage를 PsiMethod 호출 하는 경우는 없어야 함.(MethodBlockMessage 통해서 처리 되도록 변경 필요)
+        if (logger.isDebugEnabled)
+            logger.debug("{} (addMessage.PsiMethod) 호출 경우 확인.", psiElement.text)
+
+        //클래스 메소드는 처리 제외.
+        if (psiElement.hasModifierProperty("static")) {
+            if (logger.isDebugEnabled) logger.debug("${psiElement.name} 제외 처리")
+            return
+        }
+
+        var psiClass: PsiClass? = psiElement.containingClass
+        if (psiClass != null) {
+            if (caller == callee && callee is ClassParticipant && psiClass == callee.psiClass) {
+                // 인스턴스 내에 메소드를 호출후, 호출된 메소드가 인스턴스 내 메소드를 재호출시 다이어그램 플로우를 인지 하기 힘들어 제안함.
+                if (logger.isDebugEnabled) logger.debug("인스턴스 내에서 2중으로 함수 호출시 중단.")
+                return
+            }
+            if (callee is ClassParticipant && psiClass != callee.psiClass) {
+                addSubMessage(
+                    MethodBlockMessage(
+                        callee,
+                        ParserContext.getInstance().getParticipant(psiClass),
+                        psiElement,
+                        comment,
+                        null
+                    )
+                )
+                return
+            }
+
+            addSubMessage(MethodBlockMessage(callee, callee, psiElement, comment, null))
+            return
+        }
+
+        //클래스 내부 메소드 호출시.
+        throw UndefindOperationException("Not Statement $psiElement -> ${psiElement.text}")
+//        if (logger.isDebugEnabled) logger.debug("addPsiExpressionStatement 실행 여부 확인. {}", psiElement)
+//        addSubMessage(MethodBlockMessage(callee, callee, psiElement, comment, null))
+    }
 
     open fun addPsiExpressionStatement(psiElement: PsiExpressionStatement, comment: String?) {
         //psiCall 추출
@@ -217,30 +238,13 @@ open class BlockMessage(
             return
         }
 
-        //클래스 메소드는 처리 제외.
-        if (method.hasModifierProperty("static")) {
-            if (logger.isDebugEnabled) logger.debug("${method.name} 제외 처리")
-            return
-        }
+        addMessage(method, comment)
 
-        val psiClass: PsiClass? = method.containingClass
-        if (psiClass != null) {
-            if (callee is ClassParticipant && psiClass != callee.psiClass) {
-                val parserContext = ParserContext.getInstance()
-                addSubMessage(MethodBlockMessage(callee, parserContext.getParticipant(psiClass), method, comment, null))
-                return
-            }
-            addSubMessage(MethodBlockMessage(callee, callee, method, comment, null))
-            return
-        }
-
-        //클래스 내부 메소드 호출시.
-        if (logger.isDebugEnabled) logger.debug("addPsiExpressionStatement 실행 여부 확인. {}", method)
-        addSubMessage(MethodBlockMessage(callee, callee, method, comment, null))
-
+//        throw UndefindOperationException("Not Statement $psiElement -> ${psiElement.text}")
     }
 
     open fun addPsiReferenceExpression(psiElement: PsiReferenceExpression, comment: String?) {
+
         var temp: PsiElement? = psiElement.resolve()
         if (temp == null) {
             temp = psiElement.qualifierExpression
@@ -251,6 +255,7 @@ open class BlockMessage(
             if (logger.isDebugEnabled) logger.debug("{} 확인 필요 라인.(addPsiReferenceExpression.qualifierExpression)", temp)
             return
         }
+
         if (temp !is PsiField) {
             if (logger.isDebugEnabled) logger.debug("{} 테스트시 캐시 확인 필요.(addPsiReferenceExpression.PsiField)", temp)
             return

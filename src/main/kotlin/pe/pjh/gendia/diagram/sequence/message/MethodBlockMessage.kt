@@ -5,6 +5,7 @@ import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiType
 import org.slf4j.LoggerFactory
 import pe.pjh.gendia.diagram.sequence.MessageArrowType
+import pe.pjh.gendia.diagram.sequence.ParserContext
 import pe.pjh.gendia.diagram.sequence.SequenceDiagramConfig
 import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
 import kotlin.text.isNullOrEmpty
@@ -53,10 +54,6 @@ class MethodBlockMessage(
             returnMessage = returnFunction.invoke(returnType)
         }
     }
-//
-//    override fun addPsiReturnStatement(psiReturnStatement: PsiReturnStatement, comment: String?) {
-//        logger.debug("MethodBlockMessage {}", psiReturnStatement.toString())
-//    }
 
     override fun getCodeLine(depth: Int, config: SequenceDiagramConfig): String {
         var code = callMessage.getCodeLine(depth, config) + super.getCodeLine(depth, config)
