@@ -5,12 +5,12 @@ import com.intellij.psi.PsiIfStatement
 import pe.pjh.gendia.diagram.sequence.ConditionalMarkType
 import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
 
-class IfElseConditionalMultipleMessage(
+class IfElseConditionalMessage(
     override val caller: BaseParticipant,
     override val callee: BaseParticipant,
     override val name: String?,
     psiIfStatement: PsiIfStatement,
-) : ConditionalMultipleMessage(caller, callee, name) {
+) : ConditionalMessage(caller, callee, name) {
 
     init {
         //루프는 단일 그룹메시지
@@ -25,7 +25,7 @@ class IfElseConditionalMultipleMessage(
             tempPsiIfStatement = if (tempPsiIfStatement?.elseBranch is PsiIfStatement) {
                 tempPsiIfStatement.elseBranch as PsiIfStatement
             } else {
-                conditionalBlock(tempPsiIfStatement?.elseBranch, "else", callee)
+                conditionalBlock(tempPsiIfStatement?.elseBranch, null, callee)
                 null
             }
         } while (tempPsiIfStatement != null)

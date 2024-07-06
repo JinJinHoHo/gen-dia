@@ -8,14 +8,6 @@ import pe.pjh.gendia.diagram.sequence.ParserContext
 import pe.pjh.gendia.diagram.sequence.SequenceDiagramConfig
 import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
 import pe.pjh.gendia.diagram.sequence.participant.ClassParticipant
-import kotlin.collections.filter
-import kotlin.collections.filterIsInstance
-import kotlin.collections.forEach
-import kotlin.collections.getOrNull
-import kotlin.jvm.java
-import kotlin.text.indexOf
-import kotlin.text.isNotEmpty
-import kotlin.text.substringAfterLast
 
 /**
  * 메시지 그룹(하위로 n개의 메시지를 갖고 있음)
@@ -75,9 +67,9 @@ open class BlockMessage(
                 )
             )
 
-            is PsiIfStatement -> addSubMessage(IfElseConditionalMultipleMessage(caller, callee, comment, psiElement))
+            is PsiIfStatement -> addSubMessage(IfElseConditionalMessage(caller, callee, comment, psiElement))
 
-            is PsiTryStatement -> addSubMessage(TryCacheConditionalMultipleMessage(caller, callee, comment, psiElement))
+            is PsiTryStatement -> addSubMessage(TryCacheConditionalMessage(caller, callee, comment, psiElement))
 
             is PsiMethodCallExpression -> addPsiMethodCallExpression(psiElement, comment)
 
@@ -115,7 +107,7 @@ open class BlockMessage(
 
             else -> {
                 if (logger.isDebugEnabled) logger.debug(psiElement.text)
-                throw UndefindOperationException("Not Statement $psiElement")
+                throw UndefindOperationException("Not Statement $psiElement -> ${psiElement.text}")
             }
         }
     }
@@ -132,7 +124,7 @@ open class BlockMessage(
     }
 
     open fun addPsiReturnStatement(psiReturnStatement: PsiReturnStatement, comment: String?) {
-        val psiExpression: PsiExpression? = psiReturnStatement.returnValue;
+        val psiExpression: PsiExpression? = psiReturnStatement.returnValue
         if (psiExpression != null) {
             addMessage(psiExpression, comment)
         } else {
@@ -194,9 +186,10 @@ open class BlockMessage(
             return
         }
 
-        var psiClass: PsiClass? = psiElement.containingClass
+        val psiClass: PsiClass? = psiElement.containingClass
         if (psiClass != null) {
-            if (caller == callee && callee is ClassParticipant && psiClass == callee.psiClass) {
+            //
+            if (caller == callee && callee is ClassParticipant && psiClass.qualifiedName == callee.psiClass.qualifiedName) {
                 // 인스턴스 내에 메소드를 호출후, 호출된 메소드가 인스턴스 내 메소드를 재호출시 다이어그램 플로우를 인지 하기 힘들어 제안함.
                 if (logger.isDebugEnabled) logger.debug("인스턴스 내에서 2중으로 함수 호출시 중단.")
                 return

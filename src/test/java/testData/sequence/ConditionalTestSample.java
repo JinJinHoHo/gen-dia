@@ -1,7 +1,8 @@
 package testData.sequence;
 
 public class ConditionalTestSample {
-    public void testRun1() {
+
+    public void testIf() {
         System.out.println("simple:key with spaces");
 
         int i = 10;
@@ -14,7 +15,7 @@ public class ConditionalTestSample {
     }
 
 
-    public void testRun2() {
+    public void testIfElse() {
         System.out.println("simple:key with spaces");
 
         int i = 10;
@@ -25,6 +26,7 @@ public class ConditionalTestSample {
             newMethod();
         } else {
             //+프린트
+            newMethod();
             System.out.println("ELSE");
         }
 

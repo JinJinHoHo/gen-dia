@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory
 import pe.pjh.gendia.diagram.TabUtil
 import pe.pjh.gendia.diagram.sequence.SequenceDiagramConfig
 import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
-import kotlin.collections.getOrNull
-import kotlin.jvm.java
 
 /**
  * For, While 조건 루프

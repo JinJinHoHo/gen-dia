@@ -27,6 +27,8 @@ open class SeqBasePlatform : BasePlatformTestCase() {
         vararg cacheFiles: String,
     ): SequenceDiagramParser {
 
+//        PsiManager.getInstance(myFixture.project).dropPsiCaches()
+
         myFixture.configureByFiles(*cacheFiles)
 
         return SequenceDiagramParser(
@@ -34,7 +36,6 @@ open class SeqBasePlatform : BasePlatformTestCase() {
             sequenceDiagramConfig
         )
     }
-
 
     override fun getTestDataPath(): String {
         return "src/test/java"

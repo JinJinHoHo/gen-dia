@@ -29,6 +29,7 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
             println(packageName)
             println(it.toString())
         }
+
         TestCase.assertEquals(1, sd.startPointPsiMethods.size)
 
     }
@@ -107,7 +108,9 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
 
         val sd = fileAndParamInit(
             "testData.sequence.SimpleBase.outerInstanceMethod",
-            "testData/sequence/SimpleBase.java", "testData/sequence/TestFun.java", "testData/test/SimpleClzz.java"
+            "testData/sequence/SimpleBase.java",
+            "testData/sequence/TestFun.java",
+            "testData/test/SimpleClzz.java"
         )
 
         sd.collection()
@@ -141,9 +144,11 @@ class SequenceDiagramParserBaseTest : SeqBasePlatform() {
      * 인라인 변수로 선언된 메소드 주석 테스트
      */
     fun testInlineVariable() {
+
         val sd = fileAndParamInit(
             "testData.sequence.SimpleBase.testInlineVariable",
-            "testData/sequence/SimpleBase.java"
+            "testData/sequence/SimpleBase.java", "testData/sequence/TestFun.java",
+            "testData/test/SimpleClzz.java"
         )
 
         sd.collection()

@@ -5,10 +5,8 @@ import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiType
 import org.slf4j.LoggerFactory
 import pe.pjh.gendia.diagram.sequence.MessageArrowType
-import pe.pjh.gendia.diagram.sequence.ParserContext
 import pe.pjh.gendia.diagram.sequence.SequenceDiagramConfig
 import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
-import kotlin.text.isNullOrEmpty
 
 class MethodBlockMessage(
     caller: BaseParticipant,
@@ -38,7 +36,7 @@ class MethodBlockMessage(
         val returnType: PsiType? = psiMethod.returnType
         if (returnFunction == null) {
             //요청자와 요청을 받은자가 다른 경우만 처리.(동일한경우 자기자신을 호출하는 불필요한 메시지가 추가됨.
-            if(caller != callee){
+            if (caller != callee) {
                 if (returnType != null && "void" != returnType.presentableText) {
                     returnMessage = CallMessage(
                         callee, caller,

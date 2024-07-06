@@ -51,9 +51,12 @@ class SequenceDiagramParser(
         config.web
 
         startPointPsiMethods.forEach {
+
             val psiClass: PsiClass = it.containingClass ?: return
+            val callee: BaseParticipant = parserContext.getParticipant(psiClass)
+
             if (config.web) {
-                val callee: BaseParticipant = parserContext.getParticipant(psiClass)
+
                 messageModels.add(
                     MethodBlockMessage(
                         actor, callee, it,
@@ -68,24 +71,23 @@ class SequenceDiagramParser(
                 )
             } else {
                 messageModels.add(
-                    MethodBlockMessage(actor, parserContext.getParticipant(psiClass), it, "Call", null)
+                    MethodBlockMessage(actor, callee, it, "Call", null)
                 )
             }
         }
     }
 
     override fun generate(): String {
+
         var code = ""
 
         //기본 설정 영역
         if (config.autonumber) {
-            code += TabUtil.textLine(1, "autonumber")
-            code += "\n"
+            code += TabUtil.textLine(1, "autonumber") + "\n"
         }
 
         //Participant/Actor 영역
-        code += parserContext.generateMessageCode()
-        code += "\n"
+        code += parserContext.generateMessageCode() + "\n"
 
 
         //Messages 영역

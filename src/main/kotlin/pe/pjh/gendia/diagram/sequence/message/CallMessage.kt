@@ -6,7 +6,6 @@ import pe.pjh.gendia.diagram.sequence.MessageArrowType
 import pe.pjh.gendia.diagram.sequence.MessageLabelType
 import pe.pjh.gendia.diagram.sequence.SequenceDiagramConfig
 import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
-import kotlin.jvm.java
 
 /**
  * 기본 메시지

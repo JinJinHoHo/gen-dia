@@ -1,4 +1,3 @@
-
 package testData.sequence;
 
 import java.io.File;
@@ -58,7 +57,7 @@ public class ErrorSample {
         int i = 10;
 
 
-        switch (i){
+        switch (i) {
             case 5: //+서브 메소드 콜
                 newMethod();
                 break;
@@ -72,7 +71,7 @@ public class ErrorSample {
                 return;
             }
 
-            default:{
+            default: {
                 System.out.println("default");
             }
         }

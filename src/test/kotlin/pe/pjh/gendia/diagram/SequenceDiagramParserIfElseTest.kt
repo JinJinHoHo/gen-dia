@@ -1,25 +1,31 @@
 package pe.pjh.gendia.diagram
 
 import junit.framework.TestCase
+import pe.pjh.gendia.diagram.sequence.ParticipantLabelType
+import pe.pjh.gendia.diagram.sequence.SequenceDiagramConfig
 
 
 //
 class SequenceDiagramParserIfElseTest : SeqBasePlatform() {
 
-    override fun getTestDataPath(): String {
-        return "src/test/testData"
-    }
 
     /**
      * IfElse 구문 테스트 타입1
      */
-    fun testGenerateByIfElse1() {
+    fun testIf() {
 
 
         val sd = fileAndParamInit(
-            "testData/sequence/ConditionalTestSample.java",
-            "testData.sequence.ConditionalTestSample.testRun1"
+            SequenceDiagramConfig(
+                UMLType.Mermaid,
+                DiagramType.SequenceDiagram,
+                "testData.sequence.ConditionalTestSample.testIf",
+                web = true,
+                participantLabelType = ParticipantLabelType.CLASS_NAME
+            ),
+            "testData/sequence/ConditionalTestSample.java"
         )
+
         sd.collection();
         sd.analysis();
 
@@ -27,17 +33,17 @@ class SequenceDiagramParserIfElseTest : SeqBasePlatform() {
         println(code)
 
         val expected = """
-            autonumber
-        
-            actor User
-        
-            participant User
-            participant sequence.ConditionalTestSample
-        
-            User->>sequence.ConditionalTestSample:testRun1
-            alt 분기 처리 타입1
-                sequence.ConditionalTestSample->>sequence.ConditionalTestSample:서브 메소드 콜:newMethod
-            end
+	autonumber
+
+	actor  User
+	participant testData.sequence.ConditionalTestSample as ConditionalTestSample
+
+	User->>testData.sequence.ConditionalTestSample:Request/testRun1
+	Note right of testData.sequence.ConditionalTestSample: 분기 처리 타입1
+	alt i == 10
+		testData.sequence.ConditionalTestSample->>testData.sequence.ConditionalTestSample:서브 메소드 콜/newMethod
+	end
+	testData.sequence.ConditionalTestSample-->>User:Response
             """
 
         TestCase.assertEquals(
@@ -49,12 +55,19 @@ class SequenceDiagramParserIfElseTest : SeqBasePlatform() {
     /**
      * IfElse 구문 테스트 타입2
      */
-    fun testGenerateByIfElse2() {
+    fun testIfElse() {
 
 
         val sd = fileAndParamInit(
-            "testData/sequence/ConditionalTestSample.java",
-            "testData.sequence.ConditionalTestSample.testRun2"
+            SequenceDiagramConfig(
+                UMLType.Mermaid,
+                DiagramType.SequenceDiagram,
+                "testData.sequence.ConditionalTestSample.testIfElse",
+                web = false,
+                participantLabelType = ParticipantLabelType.CLASS_NAME
+            ),
+
+            "testData/sequence/ConditionalTestSample.java"
         )
         sd.collection();
         sd.analysis();

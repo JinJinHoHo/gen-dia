@@ -1,4 +1,3 @@
-
 package testData.sequence;
 
 public class SimpleInBlock {

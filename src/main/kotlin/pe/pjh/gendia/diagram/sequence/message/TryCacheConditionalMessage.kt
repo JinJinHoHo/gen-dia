@@ -3,14 +3,13 @@ package pe.pjh.gendia.diagram.sequence.message
 import com.intellij.psi.PsiTryStatement
 import pe.pjh.gendia.diagram.sequence.ConditionalMarkType
 import pe.pjh.gendia.diagram.sequence.participant.BaseParticipant
-import kotlin.collections.forEach
 
-class TryCacheConditionalMultipleMessage(
+class TryCacheConditionalMessage(
     override val caller: BaseParticipant,
     override val callee: BaseParticipant,
     override val name: String?,
     psiTryStatement: PsiTryStatement,
-) : ConditionalMultipleMessage(caller, callee, name) {
+) : ConditionalMessage(caller, callee, name) {
 
     init {
         //루프는 단일 그룹메시지
